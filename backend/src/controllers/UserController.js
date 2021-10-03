@@ -53,19 +53,19 @@ export default {
   },
   getProfile: async (req, res) => {
     const user = req.user;
-    UserService.getProfile(user._id) 
+    UserService.getProfile(user._id)
       .then((result) => {
         return res.status(200).json(result);
       })
       .catch((error) => {
         return res.status(error.code).json(error);
       });
-  }, 
+  },
   post: async (req, res, err) => {
     const originalName = req.file.originalname;
 
     let link;
-    let {userID, status, linkFile, photoOfUser} = req.body;
+    let { userID, status, linkFile, photoOfUser } = req.body;
 
     googleAPI(req, res, err).then((path) => {
       link = path;
@@ -80,36 +80,41 @@ export default {
     });
   },
   postWithTicket: async (req, res, err) => {
-    UserService.postWithTicket(req.user._id, req.body.linkFile, req.body.originalName, req.body.photoOfUser)
-        .then((result) => {
-          return res.status(200).json(result);
-        })
-        .catch((error) => {
-          Log.error("Post", error.message, error);
-          return res.status(error.code).json(error);
-        });
+    UserService.postWithTicket(
+      req.user._id,
+      req.body.linkFile,
+      req.body.originalName,
+      req.body.photoOfUser
+    )
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch((error) => {
+        Log.error("Post", error.message, error);
+        return res.status(error.code).json(error);
+      });
   },
   getPhotos: async (req, res, err) => {
     const user = req.user;
     UserService.getPhotos(user._id)
-      .then(result => {
+      .then((result) => {
         return res.status(200).json(result);
       })
-      .catch(error => {
-        Log.error('Photos', error.message, error);
+      .catch((error) => {
+        Log.error("Photos", error.message, error);
         return res.status(error.code).json(error);
-      })
+      });
   },
   postComment: async (req, res, err) => {
     const { userID, postID, ownerName, linkAvatar, content } = req.body;
 
     UserService.postComment(userID, postID, ownerName, linkAvatar, content)
-    .then((result) => {
-      return res.status(200).json(result);
-    })
-    .catch((error) => {
-      Log.error("PostComment", error.message, error);
-      return res.status(error.code).json(error);
-    });
-  }
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch((error) => {
+        Log.error("PostComment", error.message, error);
+        return res.status(error.code).json(error);
+      });
+  },
 };
