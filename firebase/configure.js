@@ -1,6 +1,5 @@
-// Import the functions you need from the SDKs you need
 import firebase from "firebase";
-
+// Import the functions you need from the SDKs you need
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -16,11 +15,12 @@ const firebaseConfig = {
   measurementId: "G-7XBXSD9ZVL",
 };
 
-let app;
-if (!firebase.apps.length) {
-  app = firebase.initializeApp(firebaseConfig);
-} else {
-  app = firebase.app();
-}
 // Initialize Firebase
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+} else {
+  // if already initialized, use that one
+  firebase.app();
+}
+
 export const auth = firebase.auth();

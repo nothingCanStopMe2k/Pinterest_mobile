@@ -10,17 +10,21 @@ import {
   Animated,
   Image,
   // Animated,
+  ActivityIndicator,
   ImageBackground,
 } from "react-native";
-import { authService } from "../../services/auth.service";
+
+//import { authService } from "../../services/auth.service";
 import features from "../../constants/features";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { onSignInWithGoogleAsync } from "../../firebase/signInWithGoogle";
+import { auth } from "../../firebase/configure";
 
 const { width, height } = Dimensions.get("window");
 
 const signIn = ({ navigation }) => {
   const newFeatureScrollX = useRef(new Animated.Value(0)).current;
-
+  const [googleSubmitting, setGoogleSubmitting] = useState(false);
   // authService
   //   .register({
   //     email: "123456@gmail.com",
@@ -29,6 +33,15 @@ const signIn = ({ navigation }) => {
   //   })
   //   .then((res) => console.log("RES: ", res))
   //   .catch((err) => console.log("ERR: ", err.message));
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        navigation.replace("home");
+      }
+    });
+    return unsubscribe;
+  }, []);
   const renderFeatures = () => {
     return (
       <Animated.FlatList
@@ -178,8 +191,15 @@ const signIn = ({ navigation }) => {
         >
           <Text style={styles.text}>Đăng kí với Email</Text>
         </TouchableWithoutFeedback>
-        <TouchableWithoutFeedback style={styles.buttonFacebook}>
-          <Text style={styles.text}>Đăng nhập với Facebook</Text>
+        <TouchableWithoutFeedback
+          style={styles.buttonGoogle}
+          onPress={() => onSignInWithGoogleAsync(setGoogleSubmitting)}
+        >
+          {!googleSubmitting ? (
+            <Text style={styles.text}>Đăng nhập với Google</Text>
+          ) : (
+            <ActivityIndicator color="#fff" />
+          )}
         </TouchableWithoutFeedback>
         <Text
           style={{
@@ -224,8 +244,8 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     borderRadius: 30,
   },
-  buttonFacebook: {
-    backgroundColor: "blue",
+  buttonGoogle: {
+    backgroundColor: "red",
     width: "85%",
     marginHorizontal: "7.5%",
     marginVertical: 5,
