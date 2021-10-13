@@ -6,7 +6,6 @@ import { googleAPI } from "../services/GoogleDrive";
 export default {
   register: async (req, res, next) => {
     let { email, password, confirmPassword } = req.body;
-    console.log('body: ', req.body)
     UserService.register(email, password, confirmPassword)
       .then((result) => {
         return res.status(201).json(result);
@@ -44,7 +43,7 @@ export default {
     });
   },
   forgotPassword: async (req, res) => {
-    console.log(req.body.email)
+    console.log(req.body.email);
     UserService.forgotPassword(req.body.email)
       .then((result) => {
         return res.status(200).json(result);
