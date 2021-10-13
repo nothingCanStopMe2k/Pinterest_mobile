@@ -6,6 +6,7 @@ import {ServiceError} from "../utils/ServiceError";
 import {Token} from '../models/Token'
 import crypto from 'crypto';
 import revmd5 from 'reverse-md5';
+import nodemailer from 'nodemailer'
 
 
 
@@ -122,9 +123,32 @@ export default {
     forgotPassword: async (email) => {
         return User.findOne({email}).then(async (user) => {
             if (user) {
-               const rev = revmd5();
-            //    console.log(rev(user.password));
-                return Promise.resolve({message: `Hi, ${user.email || 'Customer'}. Your password is ${rev(user.password).str}`});
+                const newPassword = crypto.randomBytes(4).toString('hex')
+                console.log(newPassword)
+                
+                //gui mail
+                const smtp = nodemailer.createTransport({ 
+                    service: 'gmail',
+                    auth: {
+                        user: 'doctinhdhqg@gmail.com',
+                        pass: 'Doctinhdhqg1!' // naturally, replace both with your real credentials or an application-specific password
+                    }
+                });
+                try {
+                    await smtp.sendMail({
+                        to: user.email,
+                        from: 'Pinteres',
+                        subject: 'New password for Pinterest account', // Tiêu đề email 
+                        text: `New password for Pinterest is ${newPassword}`, 
+                    });
+                    user.password = md5(newPassword)
+                    user.save()
+                } catch (error) {
+                    console.log(error)
+                    return Promise.resolve({message: 'Have an error. Please try again'});
+                }
+                
+                return Promise.resolve({message: `Hi, ${user.email || 'Customer'}. New your password was sent to your email. Please check your mail!`});
             }
             return Promise.reject(new ServiceError(400, "User is not exists!"));
         },
