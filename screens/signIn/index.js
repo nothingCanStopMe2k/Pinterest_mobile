@@ -18,7 +18,8 @@ import {
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogle";
 import { auth } from "../../services/firebase/configure";
-import { icons, images, SIZES, COLORS } from "../../constants";
+import { icons, images, SIZES, COLORS, FONTS } from "../../constants";
+import { color } from "react-native-reanimated";
 
 const signIn = ({ navigation }) => {
   const dummyData = [
@@ -178,7 +179,7 @@ const signIn = ({ navigation }) => {
           });
           const dotColor = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
-            outputRange: ["#444", "#FF002E", "#444"],
+            outputRange: ["#444", COLORS.red, "#444"],
             extrapolate: "clamp",
           });
 
@@ -214,7 +215,9 @@ const signIn = ({ navigation }) => {
             navigation.navigate("signUp");
           }}
         >
-          <Text style={styles.text}>Đăng kí với Email</Text>
+          <Text style={[styles.text, { color: "#fff" }]}>
+            Đăng kí với Email
+          </Text>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
           style={styles.buttonGoogle}
@@ -225,11 +228,12 @@ const signIn = ({ navigation }) => {
             style={{
               width: 30,
               height: 30,
-              marginRight: 25,
+              position: "absolute",
+              left: 10,
             }}
           />
           {!googleSubmitting ? (
-            <Text style={styles.text}>Tiếp tục với Google</Text>
+            <Text style={styles.text}>Tiếp tục bằng Google</Text>
           ) : (
             <ActivityIndicator color="#fff" />
           )}
@@ -269,27 +273,33 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   buttonEmail: {
-    backgroundColor: "#FF002E",
+    display: "flex",
+    justifyContent: "center",
+    backgroundColor: COLORS.red,
     width: "80%",
+    height: 50,
     marginHorizontal: "10%",
     marginVertical: 5,
     paddingHorizontal: 10,
-    paddingVertical: 15,
+    paddingVertical: 8,
     borderRadius: 30,
   },
   buttonGoogle: {
     display: "flex",
-    flexDirection: "row",
-    backgroundColor: "red",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.gray,
     width: "80%",
+    height: 50,
     marginHorizontal: "10%",
     marginVertical: 5,
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingVertical: 8,
     borderRadius: 30,
   },
   text: {
-    color: "#fff",
+    color: "#000",
     textAlign: "center",
+    ...FONTS.h3,
   },
 });

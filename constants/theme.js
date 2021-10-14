@@ -3,10 +3,12 @@ const { width, height } = Dimensions.get("window");
 
 // COLOR
 export const COLORS = {
-  primaryLight: "",
+  primaryColor: "",
 
   white: "#ccc",
   black: "#000",
+  gray: "#ddd",
+  red: "#E60024",
 };
 
 // SIZES
@@ -33,12 +35,11 @@ export const FONTS = {
   // logo: { fontFamily: "HoustanderDemo", fontSize: SIZES.logo },
   // h1_bold: { fontFamily: "Quicksand-Bold", fontSize: SIZES.h1, lineHeight: 32 },
   // h3_bold: { fontFamily: "Quicksand-Bold", fontSize: (SIZES.h2+SIZES.h3)/2 },
-  // h3: { fontFamily: "Quicksand-Light", fontSize: SIZES.h3 },
-  // h4: { fontFamily: "Quicksand-Bold", fontSize: SIZES.h4, lineHeight: 20 },
-  // body4: { fontFamily: "Quicksand-Light", fontSize: SIZES.body4, lineHeight: 22 },
-  // body3: { fontFamily: "Quicksand-Light", fontSize: SIZES.body3, lineHeight: 22 },
+  h3: { fontFamily: "Roboto-Medium", fontSize: SIZES.h3 },
+  // h4: { fontFamily: "Roboto-Black", fontSize: SIZES.h4, lineHeight: 20 },
+  // body4: { fontFamily: "sans-serif", fontSize: SIZES.body4 },
   // body5: { fontFamily: "Quicksand-Bold", fontSize: SIZES.body5, lineHeight: 22 }
 };
 
-const appTheme = { COLORS, SIZES };
+const appTheme = { COLORS, SIZES, FONTS };
 export default appTheme;
