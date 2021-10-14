@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { auth } from "../../firebase/configure";
+import { auth } from "../../services/firebase/configure";
 
 const Home = ({ navigation }) => {
   const handleSignOut = () => {

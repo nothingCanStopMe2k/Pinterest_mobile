@@ -15,24 +15,49 @@ import {
 } from "react-native";
 
 //import { authService } from "../../services/auth.service";
-import features from "../../constants/features";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import { onSignInWithGoogleAsync } from "../../firebase/signInWithGoogle";
-import { auth } from "../../firebase/configure";
-
-const { width, height } = Dimensions.get("window");
+import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogle";
+import { auth } from "../../services/firebase/configure";
+import { icons, images, SIZES, COLORS } from "../../constants";
 
 const signIn = ({ navigation }) => {
+  const dummyData = [
+    {
+      id: 1,
+      title1: "Chia sẻ hình ảnh ",
+      title2: "yêu thích của bạn với cộng đồng",
+      subTitle: "Kho thư viện hình ảnh trên khắp thế giới",
+      image: images.fea3,
+      bg: images.bg1,
+    },
+    {
+      id: 2,
+      title1: "Kết bạn giao lưu",
+      title2: "với những người cùng sở thích",
+      subTitle: "Tìm kiếm chân ái của đời mình",
+      image: images.fea2,
+      bg: images.bg2,
+    },
+    {
+      id: 3,
+      title1: "Khơi nguồn cảm hứng",
+      title2: "thoải mái tha hồ sáng tạo",
+      subTitle: "...",
+      image: images.fea3,
+      bg: images.bg3,
+    },
+    {
+      id: 4,
+      title1: "Cân bằng hài hòa",
+      title2: "yếu tố bên trong và bên ngoài",
+      subTitle: "...",
+      image: images.fea4,
+      bg: images.bg1,
+    },
+  ];
+
   const newFeatureScrollX = useRef(new Animated.Value(0)).current;
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
-  // authService
-  //   .register({
-  //     email: "123456@gmail.com",
-  //     password: "1234",
-  //     confirmPassword: "1234",
-  //   })
-  //   .then((res) => console.log("RES: ", res))
-  //   .catch((err) => console.log("ERR: ", err.message));
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -49,8 +74,8 @@ const signIn = ({ navigation }) => {
         pagingEnabled
         scrollEventThrottle={16}
         snapToAlignment="center"
-        snapToInterval={width}
-        data={features}
+        snapToInterval={SIZES.width}
+        data={dummyData}
         decelerationRate={0}
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={{
@@ -68,7 +93,7 @@ const signIn = ({ navigation }) => {
           return (
             <ImageBackground
               style={{
-                width: width,
+                width: SIZES.width,
                 justifyContent: "flex-end",
                 alignItems: "center",
               }}
@@ -76,7 +101,7 @@ const signIn = ({ navigation }) => {
             >
               <View
                 style={{
-                  width: width,
+                  width: SIZES.width,
                   alignItems: "center",
                 }}
               >
@@ -129,7 +154,7 @@ const signIn = ({ navigation }) => {
   };
 
   const renderDots = () => {
-    const dotPosition = Animated.divide(newFeatureScrollX, width);
+    const dotPosition = Animated.divide(newFeatureScrollX, SIZES.width);
 
     return (
       <View
@@ -140,7 +165,7 @@ const signIn = ({ navigation }) => {
           marginVertical: 48,
         }}
       >
-        {features.map((item, index) => {
+        {dummyData.map((item, index) => {
           const opacity = dotPosition.interpolate({
             inputRange: [index - 1, index, index + 1],
             outputRange: [0.3, 1, 0.3],
@@ -195,8 +220,16 @@ const signIn = ({ navigation }) => {
           style={styles.buttonGoogle}
           onPress={() => onSignInWithGoogleAsync(setGoogleSubmitting)}
         >
+          <Image
+            source={icons.google}
+            style={{
+              width: 30,
+              height: 30,
+              marginRight: 25,
+            }}
+          />
           {!googleSubmitting ? (
-            <Text style={styles.text}>Đăng nhập với Google</Text>
+            <Text style={styles.text}>Tiếp tục với Google</Text>
           ) : (
             <ActivityIndicator color="#fff" />
           )}
@@ -231,26 +264,28 @@ export default signIn;
 
 const styles = StyleSheet.create({
   layout: {
-    width: width,
-    height: height,
+    width: SIZES.width,
+    height: SIZES.height,
     flex: 1,
   },
   buttonEmail: {
     backgroundColor: "#FF002E",
-    width: "85%",
-    marginHorizontal: "7.5%",
+    width: "80%",
+    marginHorizontal: "10%",
     marginVertical: 5,
-    paddingHorizontal: 20,
+    paddingHorizontal: 10,
     paddingVertical: 15,
     borderRadius: 30,
   },
   buttonGoogle: {
+    display: "flex",
+    flexDirection: "row",
     backgroundColor: "red",
-    width: "85%",
-    marginHorizontal: "7.5%",
+    width: "80%",
+    marginHorizontal: "10%",
     marginVertical: 5,
-    paddingHorizontal: 20,
-    paddingVertical: 15,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     borderRadius: 30,
   },
   text: {
