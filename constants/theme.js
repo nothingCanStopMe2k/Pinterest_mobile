@@ -35,6 +35,7 @@ export const FONTS = {
   // logo: { fontFamily: "HoustanderDemo", fontSize: SIZES.logo },
   // h1_bold: { fontFamily: "Quicksand-Bold", fontSize: SIZES.h1, lineHeight: 32 },
   // h3_bold: { fontFamily: "Quicksand-Bold", fontSize: (SIZES.h2+SIZES.h3)/2 },
+  h1: { fontFamily: "Roboto-Medium", fontSize: SIZES.h1 },
   h3: { fontFamily: "Roboto-Medium", fontSize: SIZES.h3 },
   // h4: { fontFamily: "Roboto-Black", fontSize: SIZES.h4, lineHeight: 20 },
   // body4: { fontFamily: "sans-serif", fontSize: SIZES.body4 },

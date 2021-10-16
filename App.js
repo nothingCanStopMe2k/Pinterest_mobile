@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { signIn, signUp, home } from "./screens";
+import { signIn, signUp, home, splash } from "./screens";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -24,8 +24,9 @@ export default function App() {
         screenOptions={{
           headerShown: false,
         }}
-        initialRouteName={"signIn"}
+        initialRouteName={"splash"}
       >
+        <Stack.Screen name="splash" component={splash} />
         <Stack.Screen name="signUp" component={signUp} />
         <Stack.Screen name="signIn" component={signIn} />
         <Stack.Screen
