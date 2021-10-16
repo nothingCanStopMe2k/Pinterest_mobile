@@ -5,6 +5,9 @@ import { signIn, signUp, home, splash } from "./screens";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import Loading from "./components/loading";
+import { Provider } from "react-redux";
+import store from "./redux/store";
 
 const Stack = createStackNavigator();
 export default function App() {
@@ -19,27 +22,30 @@ export default function App() {
   if (!loaded) return null;
   //==========================
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-        initialRouteName={"splash"}
-      >
-        <Stack.Screen name="splash" component={splash} />
-        <Stack.Screen name="signUp" component={signUp} />
-        <Stack.Screen name="signIn" component={signIn} />
-        <Stack.Screen
-          name="home"
-          options={{
-            headerShown: true,
-            title: "Home",
-            headerTitleAlign: "center",
+    <Provider store={store}>
+      <Loading />
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
           }}
-          component={home}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+          initialRouteName={"splash"}
+        >
+          <Stack.Screen name="splash" component={splash} />
+          <Stack.Screen name="signUp" component={signUp} />
+          <Stack.Screen name="signIn" component={signIn} />
+          <Stack.Screen
+            name="home"
+            options={{
+              headerShown: true,
+              title: "Home",
+              headerTitleAlign: "center",
+            }}
+            component={home}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 

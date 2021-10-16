@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -19,9 +20,14 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogle";
 import { auth } from "../../services/firebase/configure";
 import { icons, images, SIZES, COLORS, FONTS } from "../../constants";
-import { color } from "react-native-reanimated";
+import { showLoading } from "../../redux";
 
 const signIn = ({ navigation }) => {
+  const dispatch = useDispatch();
+  useEffect(() => {
+    // dispatch(showLoading());
+  }, []);
+
   const dummyData = [
     {
       id: 1,
