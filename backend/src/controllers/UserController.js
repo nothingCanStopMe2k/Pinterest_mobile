@@ -118,4 +118,21 @@ export default {
         return res.status(error.code).json(error);
       });
   },
+  registerWithGoogle: async (req, res, err) => {
+    const { email, firstName, lastName, profilePhoto, type } = req.body;
+    UserService.registerWithGoogle(
+      email,
+      firstName,
+      lastName,
+      profilePhoto,
+      type
+    )
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch((error) => {
+        Log.error("RegisterWithGoogle", error.message, error);
+        return res.status(error.code).json(error);
+      });
+  },
 };

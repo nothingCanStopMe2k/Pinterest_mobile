@@ -7,14 +7,20 @@ const register = (payload) => requestService.post(requestUrl.register, payload);
 
 const logout = () => localStorage.clear();
 
-const updateRegisterProfile = payload => requestService.post(requestUrl.updateRegisterProfile, payload);
+const updateRegisterProfile = (payload) =>
+  requestService.post(requestUrl.updateRegisterProfile, payload);
 
-const forgotPassword = payLoad => requestService.post(requestUrl.forgotPassword, payLoad);
+const forgotPassword = (payLoad) =>
+  requestService.post(requestUrl.forgotPassword, payLoad);
+
+const registerWithGoogle = (payLoad) =>
+  requestService.post(requestUrl.registerWithGoogle, payLoad);
 
 export const authService = {
   login,
   register,
   logout,
   updateRegisterProfile,
-  forgotPassword
+  forgotPassword,
+  registerWithGoogle,
 };

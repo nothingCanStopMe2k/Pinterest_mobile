@@ -1,10 +1,10 @@
 import firebase from "firebase";
 import { auth } from "./configure";
+import { authService } from "../auth.service";
 
 const googleAuthProvider = firebase.auth.GoogleAuthProvider;
 
 export const authenticateWithFirebase = (googleUser, setGoogleSubmitting) => {
-  console.log("Google Auth Response", googleUser);
   // We need to register an Observer on Firebase Auth to make sure auth is initialized.
   const unsubcribe = auth.onAuthStateChanged((firebaseUser) => {
     // Check if we are already signed-in Firebase with the correct user.
@@ -21,6 +21,16 @@ export const authenticateWithFirebase = (googleUser, setGoogleSubmitting) => {
         .signInWithCredential(credential)
         .then(() => {
           console.log("User signed in");
+          authService
+            .registerWithGoogle({
+              email: googleUser.user.email,
+              firstName: googleUser.user.givenName,
+              lastName: googleUser.user.familyName,
+              profilePhoto: googleUser.user.photoUrl,
+              type: "google",
+            })
+            .then(() => {});
+
           setGoogleSubmitting(false);
           //navigation.replace("home");
         })

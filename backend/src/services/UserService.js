@@ -53,7 +53,7 @@ export default {
         if (user) {
           user.firstName = body.firstName;
           user.lastName = body.lastName;
-          user.age = body.age;
+          user.age = body.age ? body.age : 0;
           user.profilePhoto = photoUrl;
           let updatedUser = await user.save();
           delete updatedUser.password;
@@ -242,5 +242,35 @@ export default {
     return `<p>Hi, ${
       user.name || "Customer"
     }, <br/> Your new password is ${newPassword}</p>`;
+  },
+
+  registerWithGoogle: async (
+    email,
+    firstName,
+    lastName,
+    profilePhoto,
+    type
+  ) => {
+    let user = await User.findOne({ email });
+    if (!user) {
+      let register = new User({
+        email,
+        lastName,
+        firstName,
+        profilePhoto,
+        type,
+      });
+      return register
+        .save()
+        .then(async (result) => {
+          let user = JSON.parse(JSON.stringify(result));
+        })
+        .catch((error) => {
+          return Promise.reject(new ServiceError(500, error.message, error));
+        });
+    }
+    return Promise.resolve({
+      email,
+    });
   },
 };
