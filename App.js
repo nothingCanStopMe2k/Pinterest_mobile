@@ -1,7 +1,8 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { signIn, signUp, home, splash } from "./screens";
+import { signIn, signUp, splash } from "./screens";
+import Main from "./screens/main";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -34,15 +35,7 @@ export default function App() {
           <Stack.Screen name="splash" component={splash} />
           <Stack.Screen name="signUp" component={signUp} />
           <Stack.Screen name="signIn" component={signIn} />
-          <Stack.Screen
-            name="home"
-            options={{
-              headerShown: true,
-              title: "Home",
-              headerTitleAlign: "center",
-            }}
-            component={home}
-          />
+          <Stack.Screen name="main" component={Main} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
