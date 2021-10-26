@@ -5,6 +5,7 @@ const bg3 = require("../assets/images/bg3.png");
 const fea2 = require("../assets/images/fea2.png");
 const fea3 = require("../assets/images/fea3.png");
 const fea4 = require("../assets/images/fea4.png");
+const opps = require("../assets/images/opps.png");
 
 // Lottie cho trang splash screen, loading
 const splash = require("../assets/images/splash.json");
@@ -19,4 +20,5 @@ export default {
   fea4,
   splash,
   loading,
+  opps,
 };

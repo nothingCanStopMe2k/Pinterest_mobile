@@ -21,7 +21,6 @@ export default {
       let register = new User({
         email,
         password: md5(password),
-        status: "true",
       });
       return register
         .save()
