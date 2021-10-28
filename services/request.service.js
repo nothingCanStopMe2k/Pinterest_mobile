@@ -28,13 +28,13 @@ const post = (path = "", body = {}, headers = DEF_HEADERS) =>
       .catch((err) => Promise.reject(err.response ? err.response.data : err))
   );
 
-// const get = (path = "", params = {}, headers = DEF_HEADERS) =>
-//   trackPromise(
-//     axiosInstance
-//       .get(path, { headers, params })
-//       .then((res) => res.data)
-//       .catch((err) => Promise.reject(err.response ? err.response.data : err))
-//   );
+const get = (path = "", params = {}, headers = DEF_HEADERS) =>
+  trackPromise(
+    axiosInstance
+      .get(path, { headers, params })
+      .then((res) => res.data)
+      .catch((err) => Promise.reject(err.response ? err.response.data : err))
+  );
 
 // const put = (path = "", body = {}, headers = DEF_HEADERS) =>
 //   trackPromise(
@@ -99,4 +99,4 @@ const post = (path = "", body = {}, headers = DEF_HEADERS) =>
 
 // axiosInstance.interceptors.request.use(requestHandler); //Lien quan den viec chan lai trc khi den backend
 
-export const requestService = { post };
+export const requestService = { post, get };
