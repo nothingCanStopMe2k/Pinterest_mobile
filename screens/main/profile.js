@@ -5,6 +5,7 @@ const Profile = () => {
   return (
     <View>
       <Text>This is profile screens</Text>
+      <Text>Tạo màn hình profile ở đây</Text>
     </View>
   );
 };
