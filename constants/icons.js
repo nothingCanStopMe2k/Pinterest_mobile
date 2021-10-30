@@ -5,6 +5,8 @@ const chat = require("../assets/icons/chat.png");
 const circle = require("../assets/icons/circle.png");
 const leftArrow = require("../assets/icons/leftArrow.png");
 const close = require("../assets/icons/close.png");
+const heartFill = require("../assets/icons/heartFill.png");
+const heartNotFill = require("../assets/icons/heartNotFill.png");
 
 export default {
   google,
@@ -14,4 +16,6 @@ export default {
   circle,
   leftArrow,
   close,
+  heartFill,
+  heartNotFill,
 };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -6,14 +6,73 @@ import {
   StyleSheet,
   TouchableOpacity,
   StatusBar,
+  Button,
+  TouchableWithoutFeedback,
 } from "react-native";
 import { auth } from "../../services/firebase/configure";
 import { fileService } from "../../services/file.service";
-import MasonryList from "@react-native-seoul/masonry-list";
+import Marsonry from "../../components/Marsonry";
+import Animated, {
+  call,
+  Extrapolate,
+  useAnimatedScrollHandler,
+  useCode,
+  useSharedValue,
+  interpolate,
+  useAnimatedStyle,
+  diffClamp,
+  add,
+} from "react-native-reanimated";
 import Pin from "../../components/Pin";
+import { COLORS, SIZES } from "../../constants";
+
+// Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
+const containerHeight = 90;
 
 const Home = ({ navigation }) => {
   const [dataFromDB, setDataFromDB] = useState([]);
+  const translateY = useSharedValue(0);
+  const offSetAnim = useSharedValue(0);
+
+  const clampedScroll = diffClamp(
+    add(
+      interpolate(translateY.va, [0, 1], [0, 1], {
+        extrapolateLeft: Extrapolate.CLAMP,
+      }),
+      offSetAnim
+    ),
+    0,
+    containerHeight
+  );
+
+  var _clampedScrollValue = 0;
+  var _offsetValue = 0;
+  var _scrollValue = 0;
+  useEffect(() => {
+    useCode(() => {
+      return call([translateY], (translateY) => {
+        const diff = translateY - _scrollValue;
+        _scrollValue = translateY;
+        _clampedScrollValue = Math.min(
+          Math.max(_clampedScrollValue * diff, 0),
+          containerHeight
+        );
+      });
+    }, [translateY]);
+
+    useCode(() => {
+      return call([offSetAnim], (offSetAnim) => {
+        _offsetValue = offSetAnim;
+      });
+    }, [offSetAnim]);
+  }, []);
+
+  const bottomTabTranslate = interpolate(
+    clampedScroll.value,
+    [0, containerHeight],
+    [0, containerHeight * 2],
+    Extrapolate.CLAMP
+  );
 
   useEffect(() => {
     fileService.getAllFile().then((res) => {
@@ -45,12 +104,14 @@ const Home = ({ navigation }) => {
   const marsoryLayout = () => {
     return (
       <View style={{ flexGrow: 2.5 }}>
-        <MasonryList
+        <Marsonry
           style={{ alignSelf: "stretch" }}
           contentContainerStyle={{
             padding: 10,
             alignSelf: "stretch",
           }}
+          // innerRef={scrollRef}
+          onScroll={scrollHandler}
           numColumns={2}
           data={dataFromDB}
           keyExtractor={(item, index) => index.toString()}
