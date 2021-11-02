@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useDispatch } from "react-redux";
 import {
   View,
   Text,
@@ -8,21 +9,15 @@ import {
   StatusBar,
   Button,
   TouchableWithoutFeedback,
+  Animated,
+  MaskedViewBase,
 } from "react-native";
+
 import { auth } from "../../services/firebase/configure";
 import { fileService } from "../../services/file.service";
+import { scrollDownHome } from "../../redux";
 import Marsonry from "../../components/Marsonry";
-import Animated, {
-  call,
-  Extrapolate,
-  useAnimatedScrollHandler,
-  useCode,
-  useSharedValue,
-  interpolate,
-  useAnimatedStyle,
-  diffClamp,
-  add,
-} from "react-native-reanimated";
+
 import Pin from "../../components/Pin";
 import { COLORS, SIZES } from "../../constants";
 
@@ -31,13 +26,17 @@ const containerHeight = 90;
 
 const Home = ({ navigation }) => {
   const [dataFromDB, setDataFromDB] = useState([]);
-  const translateY = useSharedValue(0);
-  const offSetAnim = useSharedValue(0);
+  const scrollY = useRef(new Animated.Value(0)).current;
+  const offSetAnim = useRef(new Animated.Value(0)).current;
 
-  const clampedScroll = diffClamp(
-    add(
-      interpolate(translateY.va, [0, 1], [0, 1], {
-        extrapolateLeft: Extrapolate.CLAMP,
+  const dispatch = useDispatch();
+
+  const clampedScroll = Animated.diffClamp(
+    Animated.add(
+      scrollY.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0, 1],
+        extrapolateLeft: "clamp",
       }),
       offSetAnim
     ),
@@ -45,40 +44,74 @@ const Home = ({ navigation }) => {
     containerHeight
   );
 
+  const headerHeight = scrollY.interpolate({
+    inputRange: [0, (SIZES.width * 2) / 5],
+    outputRange: [(SIZES.width * 2) / 5, 0],
+    extrapolate: "clamp",
+  });
+
   var _clampedScrollValue = 0;
   var _offsetValue = 0;
   var _scrollValue = 0;
-  useEffect(() => {
-    useCode(() => {
-      return call([translateY], (translateY) => {
-        const diff = translateY - _scrollValue;
-        _scrollValue = translateY;
-        _clampedScrollValue = Math.min(
-          Math.max(_clampedScrollValue * diff, 0),
-          containerHeight
-        );
-      });
-    }, [translateY]);
-
-    useCode(() => {
-      return call([offSetAnim], (offSetAnim) => {
-        _offsetValue = offSetAnim;
-      });
-    }, [offSetAnim]);
-  }, []);
-
-  const bottomTabTranslate = interpolate(
-    clampedScroll.value,
-    [0, containerHeight],
-    [0, containerHeight * 2],
-    Extrapolate.CLAMP
-  );
 
   useEffect(() => {
     fileService.getAllFile().then((res) => {
       setDataFromDB(res.slice(0, 20));
     });
+
+    scrollY.addListener(({ value }) => {
+      const diff = value - _scrollValue;
+      _scrollValue = value;
+      _clampedScrollValue = Math.min(
+        Math.max(_clampedScrollValue * diff, 0),
+        containerHeight
+      );
+    });
+
+    offSetAnim.addListener(({ value }) => {
+      _offsetValue = value;
+    });
   }, []);
+  useEffect(() => {
+    const bottomTabTranslate = clampedScroll.interpolate({
+      inputRange: [0, containerHeight],
+      outputRange: [0, containerHeight * 2],
+      extrapolate: "clamp",
+    });
+    const bottomTabOpacity = clampedScroll.interpolate({
+      inputRange: [0, containerHeight],
+      outputRange: [1, 0],
+      extrapolate: "clamp",
+    });
+    headerCollapseAnim = clampedScroll.interpolate({
+      inputRange: [0, (SIZES.height * 2) / 5],
+      outputRange: [0, -(SIZES.height * 2) / 5],
+      extrapolate: "clamp",
+    });
+
+    dispatch(scrollDownHome(bottomTabTranslate, bottomTabOpacity));
+  }, [clampedScroll]);
+
+  var scrollEndTimer = null;
+  const onMomentumScrollBegin = () => {
+    clearTimeout(scrollEndTimer);
+  };
+  const onMomentumScrollEnd = () => {
+    const toValue =
+      _scrollValue > containerHeight &&
+      _clampedScrollValue > containerHeight / 2
+        ? _offsetValue + containerHeight
+        : _offsetValue - containerHeight;
+
+    Animated.timing(offSetAnim, {
+      toValue,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+  const onScrollEndDrag = () => {
+    scrollEndTimer = setTimeout(onMomentumScrollEnd, 250);
+  };
 
   const handleSignOut = () => {
     auth
@@ -95,15 +128,15 @@ const Home = ({ navigation }) => {
   // Giao diện:
   const header = () => {
     return (
-      <View style={{ flexGrow: 1 }}>
+      <Animated.View style={{ flex: 1 }}>
         <Text>Header</Text>
-      </View>
+      </Animated.View>
     );
   };
 
   const marsoryLayout = () => {
     return (
-      <View style={{ flexGrow: 2.5 }}>
+      <Animated.View style={{ flexGrow: 2.5 }}>
         <Marsonry
           style={{ alignSelf: "stretch" }}
           contentContainerStyle={{
@@ -111,7 +144,13 @@ const Home = ({ navigation }) => {
             alignSelf: "stretch",
           }}
           // innerRef={scrollRef}
-          onScroll={scrollHandler}
+          onScroll={Animated.event(
+            [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            { useNativeDriver: true }
+          )}
+          onMomentumScrollBegin={onMomentumScrollBegin}
+          onMomentumScrollEnd={onMomentumScrollEnd}
+          onScrollEndDrag={onScrollEndDrag}
           numColumns={2}
           data={dataFromDB}
           keyExtractor={(item, index) => index.toString()}
@@ -119,7 +158,7 @@ const Home = ({ navigation }) => {
             <Pin key={i.toString()} index={i} item={item} />
           )}
         />
-      </View>
+      </Animated.View>
     );
   };
 

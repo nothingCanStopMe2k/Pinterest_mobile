@@ -7,9 +7,9 @@ import {
   StyleProp,
   View,
   ViewStyle,
+  Animated,
 } from "react-native";
 import React, { MutableRefObject, ReactElement, memo, useState } from "react";
-import Animated from "react-native-reanimated";
 
 interface Props<T>
   extends Omit<ScrollViewProps, "refreshControl" | "onScroll"> {
@@ -20,6 +20,9 @@ interface Props<T>
   onRefresh?: RefreshControlProps["onRefresh"];
   onEndReached?: () => void;
   onScroll?: () => void;
+  onMomentumScrollBegin?: () => void;
+  onMomentumScrollEnd?: () => void;
+  onScrollEndDrag?: () => void;
   onEndReachedThreshold?: number;
   style?: StyleProp<ViewStyle>;
   data: T[];
@@ -64,6 +67,9 @@ function MasonryList<T>(props: Props<T>): ReactElement {
     style,
     horizontal,
     onScroll,
+    onMomentumScrollBegin,
+    onMomentumScrollEnd,
+    onScrollEndDrag,
   } = props;
 
   return (
@@ -89,6 +95,9 @@ function MasonryList<T>(props: Props<T>): ReactElement {
 
       // }}
       onScroll={onScroll}
+      onMomentumScrollBegin={onMomentumScrollBegin}
+      onMomentumScrollEnd={onMomentumScrollEnd}
+      onScrollEndDrag={onScrollEndDrag}
     >
       {ListHeaderComponent}
       {data.length === 0 && ListEmptyComponent ? (

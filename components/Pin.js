@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
 import { SIZES, icons, FONTS, COLORS } from "../constants";
+import { LinearGradient } from "expo-linear-gradient";
 
 const Pin = (props) => {
   const { index, item } = props;
@@ -12,7 +13,7 @@ const Pin = (props) => {
           flex: 1,
           margin: 5,
           marginBottom: 2,
-          height: Math.random() > 0.5 ? 150 : 280,
+          height: Math.random() > 0.5 ? 200 : 280,
         }}
       >
         <Image
@@ -27,11 +28,12 @@ const Pin = (props) => {
           style={{
             position: "absolute",
             bottom: 0,
+            width: "100%",
           }}
         >
           <View
             style={{
-              marginBottom: 10,
+              marginBottom: -10,
               marginTop: 5,
               backgroundColor: "rgba(255, 255, 255, 0.5)",
               // opacity: 0.5,
@@ -60,20 +62,39 @@ const Pin = (props) => {
               {item.count}
             </Text>
           </View>
+          {item.status ? (
+            <LinearGradient
+              colors={["transparent", "#000"]}
+              start={{
+                x: 0.5,
+                y: 0,
+              }}
+              end={{
+                x: 0.5,
+                y: 1,
+              }}
+              style={{
+                paddingLeft: 15,
+                paddingTop: 15,
+                paddingBottom: 5,
+                borderRadius: 10,
+                height: 50,
+              }}
+            >
+              <Text
+                style={{
+                  ...FONTS.h4,
+                  color: "#fff",
+                }}
+              >
+                {item.status}
+              </Text>
+            </LinearGradient>
+          ) : (
+            <Text></Text>
+          )}
         </View>
       </View>
-      {item.status ? (
-        <Text
-          style={{
-            ...FONTS.h4,
-            color: COLORS.black,
-            marginLeft: 15,
-            marginBottom: 15,
-          }}
-        >
-          {item.status}
-        </Text>
-      ) : null}
     </View>
   );
 };
