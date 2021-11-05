@@ -54,6 +54,7 @@ export default {
   },
   getProfile: async (req, res) => {
     const user = req.user;
+    console.log("REQ; ", req);
     UserService.getProfile(user._id)
       .then((result) => {
         return res.status(200).json(result);

@@ -22,6 +22,7 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { icons, FONTS, COLORS, SIZES, images } from "../../constants";
 import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogle";
 import { hideLoading, showLoading } from "../../redux";
+import { user } from "../../util/user"; //
 
 const signUp = ({ navigation }) => {
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
@@ -67,6 +68,7 @@ const signUp = ({ navigation }) => {
       setVisiblePopForgotPass(false);
     }
   };
+
   const onSubmit = async (data) => {
     if (isValidUser && isValidPassword) {
       return;
@@ -77,6 +79,8 @@ const signUp = ({ navigation }) => {
       await authService
         .login(data)
         .then((res) => {
+          console.log("RES login: ", res);
+          user.saveUserStorage(res.token);
           dispatch(hideLoading());
           navigation.navigate("main");
         })
