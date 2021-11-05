@@ -79,7 +79,6 @@ const signUp = ({ navigation }) => {
       await authService
         .login(data)
         .then((res) => {
-          console.log("RES login: ", res);
           user.saveUserStorage(res.token);
           dispatch(hideLoading());
           navigation.navigate("main");

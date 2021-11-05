@@ -54,8 +54,8 @@ export default {
   },
   getProfile: async (req, res) => {
     const user = req.user;
-    console.log("REQ; ", req);
-    UserService.getProfile(user._id)
+    console.log("REQ; ", req.query);
+    UserService.getProfile(req.query.userID)
       .then((result) => {
         return res.status(200).json(result);
       })

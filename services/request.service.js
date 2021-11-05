@@ -11,7 +11,7 @@ const DEF_HEADERS = {
   // "Content-Type": "multipart/form-data",
 };
 
-const BASE_URL = "http://192.168.1.103:5000";
+const BASE_URL = "http://192.168.1.6:5000";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -19,7 +19,9 @@ const axiosInstance = axios.create({
 
 const createServerResponse = (res) => ({ status: res.status, data: res.data });
 
-const logout = () => {AsyncStorage.clear()};
+const logout = () => {
+  AsyncStorage.clear();
+};
 
 const post = (path = "", body = {}, headers = DEF_HEADERS) =>
   trackPromise(
@@ -101,4 +103,10 @@ const requestHandler = async (request) => {
 
 // axiosInstance.interceptors.request.use(requestHandler); //Lien quan den viec chan lai trc khi den backend
 
-export const requestService = { post, get, getWithoutTrackLoading, put, logout };
+export const requestService = {
+  post,
+  get,
+  getWithoutTrackLoading,
+  put,
+  logout,
+};
