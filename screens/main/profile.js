@@ -2,17 +2,13 @@ import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 
 import { userService } from "../../services/user.service";
-import { user } from "../../util/user"; //
-import { requestService } from "../../services/request.service";
-import { fileService } from "../../services/file.service";
-import { auth } from "../../services/firebase/configure";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Profile = () => {
   const [apiError, setApiError] = useState("");
-  const [userProfile, setUserProfile] = useState({});
-  const [userPhotos, setUserPhotos] = useState([]);
-  const [userVideos, setUserVideos] = useState([]);
+  const [userProfile, setUserProfile] = useState({}); //thông tin người dùng
+  const [userPhotos, setUserPhotos] = useState([]); //array hình người đó đăng
+  const [userVideos, setUserVideos] = useState([]);// array video người đó đăng
 
   useEffect(() => {
     AsyncStorage.getItem("userInfo")
@@ -20,7 +16,7 @@ const Profile = () => {
       const payload = {
         userID: JSON.parse(value).user,
       };
-
+      //lấy thông tin người dùng
       userService
         .getProfile(payload)
         .then((res) => {
@@ -59,31 +55,15 @@ const Profile = () => {
     });
   }, []);
 
-  const out = async () => {
-    const userInfo = await user.getUserStorage;
-
-    const payload = {
-      userID: userInfo.user,
-    };
-    userService
-      .getProfile(payload)
-      .then((res) => {
-        console.log("PROFILE INFO: ", res);
-        setUserProfile(res);
-      })
-      .catch((err) => {
-        if (err === 400) setApiError("Load fail!!!");
-        else setApiError(err.message);
-      });
-  };
+  
 
   return (
     <View>
       <Text>This is profile screens</Text>
       <Text>Tạo màn hình profile ở đây</Text>
-      <TouchableOpacity onPress={out}>
-        <Text>Đăng xuất</Text>
-      </TouchableOpacity>
+      {/* đăng nhập tài khoản test@gmail.com, pass: 123 */}
+      {/* link avatar của user  */}
+      <Text>{userProfile.profilePhoto}</Text>
       
     </View>
   );
