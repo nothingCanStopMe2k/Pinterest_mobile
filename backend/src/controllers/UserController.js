@@ -98,7 +98,7 @@ export default {
   },
   getPhotos: async (req, res, err) => {
     const user = req.user;
-    UserService.getPhotos(user._id)
+    UserService.getPhotos(req.query.userID)
       .then((result) => {
         return res.status(200).json(result);
       })

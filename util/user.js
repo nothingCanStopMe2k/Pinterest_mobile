@@ -2,22 +2,17 @@ import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getUserStorage = () => {
-  // AsyncStorage.getItem("userInfo")
-  //   .then((value) => {
-  //     // console.log("VALUIE", value);
-  //     console.log(JSON.parse(value));
-  //   })
-  //   .catch((err) => {
-  //     console.log(err);
-  //     return {};
-  //   });
-  // // return userInfo;
+  AsyncStorage.getItem("userInfo")
+    .then((value) => {
+      return JSON.parse(value);
+    })
+    .catch((err) => {
+      console.log(err);
+      return {};
+    });
 };
 
 const saveUserStorage = (userInfo) => {
-  // Hàm này m check chjuwa?
-  // check rooif
-
   AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
 };
 

@@ -5,10 +5,9 @@ const getProfile = (data) => requestService.get(requestUrl.getProfile, data);
 
 const post = (data) => requestService.post(requestUrl.post, data);
 
-const getPhotos = () => requestService.get(requestUrl.getPhotos);
+const getPhotos = (data) => requestService.get(requestUrl.getPhotos, data);
 
-const postWithTicket = (data) =>
-  requestService.post(requestUrl.postWithTicket, data);
+const postWithTicket = (data) => requestService.post(requestUrl.postWithTicket, data);
 
 const postComment = (data) => requestService.post(requestUrl.postComment, data);
 
