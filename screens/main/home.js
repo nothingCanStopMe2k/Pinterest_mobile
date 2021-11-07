@@ -28,26 +28,29 @@ const Home = ({ navigation }) => {
   // Giao diện:
   useEffect(() => {
     adminService.getAllUser().then((res) => {
-      setDatasForHeader(res.slice(3,12))
+      setDatasForHeader(res.slice(3,11))
     });
   },[]);
 
   const OnlineUser = (props) => {
     const photoUri = props.data.profilePhoto
-
+    const name = (props.data.firstName? props.data.firstName:'') + ' ' + (props.data.lastName? props.data.lastName:'')
     return (
-      <TouchableOpacity style={styles.onlineUser}>
-        <Image
-          style={styles.onlineUserImg}
-          source={{
-            uri: photoUri,
-          }}
-        ></Image>
-        <View style={styles.greenDot}></View>
-      </TouchableOpacity>
+      <View style={styles.onlineUserContainer}>
+        <TouchableOpacity style={styles.onlineUser}>
+          <Image
+            style={styles.onlineUserImg}
+            source={{
+              uri: photoUri,
+            }}
+          ></Image>
+          <View style={styles.greenDot}></View>
+        </TouchableOpacity>
+        <Text numberOfLines={1} ellipsizeMode={'tail'} style={styles.onlineUserName}>{name}</Text>
+      </View>
     );
   };
-
+  
   const Header = (props) => {
     console.log(props.datas)
     return (
@@ -130,18 +133,30 @@ const styles = StyleSheet.create({
   userList: {
     flex: 1,
     flexDirection: "row",
-    marginTop: 20,
-    marginBottom: 20,
+    marginTop: 10,
+    marginBottom: 0,
+  },
+  onlineUserContainer:{
+    flexDirection:'column',
+    justifyContent:'center',
+    alignItems:'center',
+    marginRight: 20
   },
   onlineUser: {
-    marginRight: 20,
-  },
-  onlineUserImg: {
     width: 60,
     height: 60,
+  },
+  onlineUserImg: {
+    width: '100%',
+    height: '100%',
     borderRadius: 100,
-    borderColor:'#000',
-    borderWidth:1
+    borderColor:'#c3c3c3',
+    borderWidth:1,
+  },
+  onlineUserName:{ 
+    width:60,
+    textAlign:'center',
+    fontSize:15
   },
   greenDot: {
     width: 15,
