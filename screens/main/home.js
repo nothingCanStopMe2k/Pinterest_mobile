@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,7 +12,7 @@ import { auth } from "../../services/firebase/configure";
 import { adminService } from "../../services/admin.service";
 
 const Home = ({ navigation }) => {
-  const datasForHeader = [];
+  const [datasForHeader,setDatasForHeader] = useState([]);
   const handleSignOut = () => {
     auth
       .signOut()
@@ -28,20 +28,19 @@ const Home = ({ navigation }) => {
   // Giao diện:
   useEffect(() => {
     adminService.getAllUser().then((res) => {
-      console.log(res.slice(0, 8));
+      setDatasForHeader(res.slice(3,12))
     });
-  }, []);
+  },[]);
 
   const OnlineUser = (props) => {
-    const url = "";
+    const photoUri = props.data.profilePhoto
 
     return (
       <TouchableOpacity style={styles.onlineUser}>
         <Image
           style={styles.onlineUserImg}
           source={{
-            uri: props.uri,
-            // uri: 'https://reactnative.dev/img/tiny_logo.png',
+            uri: photoUri,
           }}
         ></Image>
         <View style={styles.greenDot}></View>
@@ -50,6 +49,7 @@ const Home = ({ navigation }) => {
   };
 
   const Header = (props) => {
+    console.log(props.datas)
     return (
       <View style={styles.header}>
         <View style={styles.headerContent}>
@@ -65,7 +65,7 @@ const Home = ({ navigation }) => {
           style={styles.userList}
         >
           {props.datas.map((data, index) => (
-            <OnlineUser uri={data.uri} key={index}></OnlineUser>
+            <OnlineUser data={data} key={index}></OnlineUser>
           ))}
         </ScrollView>
       </View>
@@ -140,6 +140,8 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 100,
+    borderColor:'#000',
+    borderWidth:1
   },
   greenDot: {
     width: 15,
