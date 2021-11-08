@@ -11,6 +11,7 @@ import {
   TouchableWithoutFeedback,
   Animated,
   MaskedViewBase,
+  ScrollView,
 } from "react-native";
 
 import { auth } from "../../services/firebase/configure";
@@ -20,12 +21,14 @@ import Marsonry from "../../components/Marsonry";
 
 import Pin from "../../components/Pin";
 import { COLORS, SIZES } from "../../constants";
+import { adminService } from "../../services/admin.service";
 
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
 
 const Home = ({ navigation }) => {
   const [dataFromDB, setDataFromDB] = useState([]);
+  const [datasForHeader, setDatasForHeader] = useState([]);
   const scrollY = useRef(new Animated.Value(0)).current;
   const offSetAnim = useRef(new Animated.Value(0)).current;
 
@@ -59,6 +62,10 @@ const Home = ({ navigation }) => {
       setDataFromDB(res.slice(0, 20));
     });
 
+    adminService.getAllUser().then((res) => {
+      setDatasForHeader(res.slice(3, 11));
+    });
+
     scrollY.addListener(({ value }) => {
       const diff = value - _scrollValue;
       _scrollValue = value;
@@ -81,11 +88,6 @@ const Home = ({ navigation }) => {
     const bottomTabOpacity = clampedScroll.interpolate({
       inputRange: [0, containerHeight],
       outputRange: [1, 0],
-      extrapolate: "clamp",
-    });
-    headerCollapseAnim = clampedScroll.interpolate({
-      inputRange: [0, (SIZES.height * 2) / 5],
-      outputRange: [0, -(SIZES.height * 2) / 5],
       extrapolate: "clamp",
     });
 
@@ -124,12 +126,54 @@ const Home = ({ navigation }) => {
   };
   // uri: auth.currentUser.photoURL
   // auth.currentUser.displayName
+  const OnlineUser = (props) => {
+    const photoUri = props.data.profilePhoto;
+    const name =
+      (props.data.firstName ? props.data.firstName : "") +
+      " " +
+      (props.data.lastName ? props.data.lastName : "");
+    return (
+      <View style={styles.onlineUserContainer}>
+        <TouchableOpacity style={styles.onlineUser}>
+          <Image
+            style={styles.onlineUserImg}
+            source={{
+              uri: photoUri,
+            }}
+          ></Image>
+          <View style={styles.greenDot}></View>
+        </TouchableOpacity>
+        <Text
+          numberOfLines={1}
+          ellipsizeMode={"tail"}
+          style={styles.onlineUserName}
+        >
+          {name}
+        </Text>
+      </View>
+    );
+  };
 
   // Giao diện:
-  const header = () => {
+  const header = (props) => {
     return (
-      <Animated.View style={{ flex: 1 }}>
-        <Text>Header</Text>
+      <Animated.View style={styles.header}>
+        <View style={styles.headerContent}>
+          <Text style={[styles.headerContentFont, styles.headerContentAll]}>
+            Tất cả
+          </Text>
+          <View style={styles.headerContentDiv}></View>
+          <Text style={styles.headerContentFont}>Sự kiện</Text>
+        </View>
+        <ScrollView
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          style={styles.userList}
+        >
+          {props.map((data, index) => (
+            <OnlineUser data={data} key={index}></OnlineUser>
+          ))}
+        </ScrollView>
       </Animated.View>
     );
   };
@@ -165,7 +209,7 @@ const Home = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar />
-      {header()}
+      {header(datasForHeader)}
       {marsoryLayout()}
     </View>
   );
@@ -174,6 +218,77 @@ const Home = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flex: 1,
+    paddingLeft: 20,
+  },
+  headerContent: {
+    flex: 1,
+    flexDirection: "row",
+    marginTop: 10,
+    justifyContent: "flex-start",
+    alignItems: "center",
+  },
+  headerContentFont: {
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  headerContentAll: {
+    color: "#fff",
+    backgroundColor: "#000",
+    paddingLeft: 15,
+    paddingRight: 15,
+    paddingTop: 10,
+    paddingBottom: 10,
+    borderRadius: 40,
+  },
+  headerContentDiv: {
+    width: 5,
+    height: "60%",
+    backgroundColor: "#000",
+    paddingTop: 5,
+    paddingBottom: 5,
+    marginLeft: 10,
+    marginRight: 10,
+    borderRadius: 20,
+  },
+  userList: {
+    flex: 1,
+    flexDirection: "row",
+    marginTop: 10,
+    marginBottom: 0,
+  },
+  onlineUserContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 20,
+  },
+  onlineUser: {
+    width: 60,
+    height: 60,
+  },
+  onlineUserImg: {
+    width: "100%",
+    height: "100%",
+    borderRadius: 100,
+    borderColor: "#c3c3c3",
+    borderWidth: 1,
+  },
+  onlineUserName: {
+    width: 60,
+    textAlign: "center",
+    fontSize: 15,
+  },
+  greenDot: {
+    width: 15,
+    height: 15,
+    backgroundColor: "#00FF00",
+    borderRadius: 20,
+    position: "absolute",
+    top: 2,
+    right: 2,
   },
 });
 export default Home;

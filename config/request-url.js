@@ -16,6 +16,8 @@ const getAllFile = "/api/file/getAllFile";
 const getAllCommentById = "/api/file/getAllCommentById";
 const updateFileById = "/api/file/updateFileById";
 
+const getAllUser = "/api/admin/getAllUser";
+
 export const requestUrl = {
   auth,
   register,
@@ -33,4 +35,5 @@ export const requestUrl = {
   getAllCommentById,
   updateFileById,
   registerWithGoogle,
+  getAllUser,
 };

@@ -46,6 +46,7 @@ app.use(cookieParser());
 // --START--    App routers
 app.use(RouteConstant.USER, routes.user);
 app.use(RouteConstant.FILE, routes.file);
+app.use(RouteConstant.ADMIN, routes.admin);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
