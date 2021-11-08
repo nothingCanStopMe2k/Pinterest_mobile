@@ -63,12 +63,11 @@ const Profile = () => {
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.titleBar}>
                     <Ionicons name="ios-arrow-back" size={24} color="#52575D"></Ionicons>
-                    <Ionicons name="md-more" size={24} color="#52575D"></Ionicons>
                 </View>
 
                 <View style={{ alignSelf: "center" }}>
                     <View style={styles.profileImage}>
-                        <Image source={userProfile.profilePhoto} style={styles.image} resizeMode="center"></Image>
+                        <Image source={{uri: userProfile.profilePhoto}} style={styles.image} resizeMode="center"></Image>
                     </View>
                     <View style={styles.add}>
                         <Ionicons name="ios-add" size={48} color="#DFD8C8" style={{ marginTop: 6, marginLeft: 2 }}></Ionicons>
@@ -76,8 +75,8 @@ const Profile = () => {
                 </View>
 
                 <View style={styles.infoContainer}>
-                    <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>Julie</Text>
-                    <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>Photographer</Text>
+                    <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>{userProfile.firstName} {userProfile.lastName}</Text>
+                    <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>{userProfile.email}</Text>
                 </View>
 
                 <View style={styles.statsContainer}>
