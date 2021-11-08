@@ -64,6 +64,7 @@ const Profile = () => {
       {/* đăng nhập tài khoản test@gmail.com, pass: 123 */}
       {/* link avatar của user  */}
       <Text>{userProfile.profilePhoto}</Text>
+      <Text>test commit</Text>
       
     </View>
   );
