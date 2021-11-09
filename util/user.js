@@ -1,16 +1,20 @@
 import moment from "moment";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// const getUserStorage = () => {
-//     const userInfo = localStorage.getItem('userInfo'); //Lấy chuỗi token trên localStorage
-//     if(!userInfo){
-//         return {};
-//     }
-//     return JSON.parse(userInfo);
-// }
+const getUserStorage = () => {
+  AsyncStorage.getItem("userInfo")
+    .then((value) => {
+      return JSON.parse(value);
+    })
+    .catch((err) => {
+      console.log(err);
+      return {};
+    });
+};
 
-// const saveUserStorage = userInfo => {
-//     localStorage.setItem('userInfo', JSON.stringify(userInfo));
-// };
+const saveUserStorage = (userInfo) => {
+  AsyncStorage.setItem("userInfo", JSON.stringify(userInfo));
+};
 
 const parseJwt = (token) => {
   const base64Url = token.split(".")[1];
@@ -46,34 +50,35 @@ const getUserInfo = () => {
   return {};
 };
 
-// const checkRememberMe = (e, checked) => {
-//     const date = moment();
+const checkRememberMe = (e, checked) => {
+  const date = moment();
 
-//     if (checked) {
-//       return localStorage.setItem('rememberMe', JSON.stringify(date));
-//     }
+  if (checked) {
+    return AsyncStorage.setItem("rememberMe", JSON.stringify(date));
+  }
 
-//     return localStorage.removeItem('rememberMe');
-// };
+  return AsyncStorage.removeItem("rememberMe");
+};
 
-// const checkRememberMeExpired = () => {
-//     const dateRememberMe = localStorage.getItem('rememberMe');
-//     const expiredTimeRememberMe = 5; // days
-//     let isRememberMeExpired = false;
+const checkRememberMeExpired = () => {
+  const dateRememberMe = AsyncStorage.getItem("rememberMe");
+  const expiredTimeRememberMe = 5; // days
+  let isRememberMeExpired = false;
 
-//     if (dateRememberMe) {
-//       const dateParse = JSON.parse(dateRememberMe);
-//       const nowDate = moment();
-//       isRememberMeExpired =
-//         nowDate.diff(dateParse, 'days', true) > expiredTimeRememberMe;
-//     }
+  if (dateRememberMe) {
+    const dateParse = JSON.parse(dateRememberMe);
+    const nowDate = moment();
+    isRememberMeExpired =
+      nowDate.diff(dateParse, "days", true) > expiredTimeRememberMe;
+  }
 
-//     return { isRememberMeExpired, hasCheckRememberMe: !!dateRememberMe };
-// };
+  return { isRememberMeExpired, hasCheckRememberMe: !!dateRememberMe };
+};
 
 export const user = {
   getUserInfo,
   checkRememberMeExpired,
   checkRememberMe,
   saveUserStorage,
+  getUserStorage,
 };

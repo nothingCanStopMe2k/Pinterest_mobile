@@ -54,7 +54,7 @@ export default {
   },
   getProfile: async (req, res) => {
     const user = req.user;
-    UserService.getProfile(user._id)
+    UserService.getProfile(req.query.userID)
       .then((result) => {
         return res.status(200).json(result);
       })
@@ -97,7 +97,7 @@ export default {
   },
   getPhotos: async (req, res, err) => {
     const user = req.user;
-    UserService.getPhotos(user._id)
+    UserService.getPhotos(req.query.userID)
       .then((result) => {
         return res.status(200).json(result);
       })
