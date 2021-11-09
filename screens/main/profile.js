@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -8,14 +9,19 @@ import {
   SafeAreaView,
   ScrollView,
   FlatList,
+  Animated,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { auth } from "../../services/firebase/configure";
+import { scrollDownHome } from "../../redux";
 
 import { userService } from "../../services/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { user } from "./../../util/user";
 import { FONTS } from "../../constants";
+import { auth } from "../../services/firebase/configure";
+
+// Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
+const containerHeight = 90;
 
 const Profile = () => {
   const [apiError, setApiError] = useState("");
@@ -24,21 +30,43 @@ const Profile = () => {
   const [userVideos, setUserVideos] = useState([]); // array video người đó đăng
   const [mounted, setMounted] = useState(false);
 
-  const handleSignOut = () => {
-    auth
-      .signOut()
-      .then(() => {
-        console.log("Signed out");
-        navigation.replace("signIn");
-      })
-      .catch(() => console.log("Error"));
-  };
+  // const scrollY = useRef(new Animated.Value(0)).current;
+  // const offSetAnim = useRef(new Animated.Value(0)).current;
+
+  // const dispatch = useDispatch();
+
+  // const clampedScroll = Animated.diffClamp(
+  //   Animated.add(
+  //     scrollY.interpolate({
+  //       inputRange: [0, 1],
+  //       outputRange: [0, 1],
+  //       extrapolateLeft: "clamp",
+  //     }),
+  //     offSetAnim
+  //   ),
+  //   0,
+  //   containerHeight
+  // );
+  // useEffect(() => {
+  //   const bottomTabTranslate = clampedScroll.interpolate({
+  //     inputRange: [0, containerHeight],
+  //     outputRange: [0, containerHeight * 2],
+  //     extrapolate: "clamp",
+  //   });
+  //   const bottomTabOpacity = clampedScroll.interpolate({
+  //     inputRange: [0, containerHeight],
+  //     outputRange: [1, 0],
+  //     extrapolate: "clamp",
+  //   });
+
+  //   dispatch(scrollDownHome(bottomTabTranslate, bottomTabOpacity));
+  // }, [clampedScroll]);
 
   if (!mounted) {
     AsyncStorage.getItem("userInfo")
       .then((value) => {
         const payload = {
-          userID: JSON.parse(value).user,
+          userID: value ? JSON.parse(value).user : {},
         };
         //lấy thông tin người dùng
         userService
@@ -78,22 +106,42 @@ const Profile = () => {
   }
   useEffect(() => {
     setMounted(true);
+
+    // auth
+    //   .signOut()
+    //   .then(() => {
+    //     console.log("Signed out");
+    //     navigation.replace("signIn");
+    //   })
+    //   .catch(() => console.log("Error"));
+    // AsyncStorage.removeItem("userInfo");
+    AsyncStorage.getItem("userInfo").then((ress) => console.log(ress));
   }, []);
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <Animated.ScrollView
+        showsVerticalScrollIndicator={false}
+        // onScroll={Animated.event(
+        //   [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        //   { useNativeDriver: true }
+        // )}
+      >
         <View style={styles.titleBar}>
           <Ionicons name="ios-arrow-back" size={24} color="#52575D"></Ionicons>
         </View>
 
         <View style={{ alignSelf: "center" }}>
           <View style={styles.profileImage}>
-            <Image
-              source={{ uri: userProfile.profilePhoto }}
-              style={styles.image}
-              resizeMode="center"
-            ></Image>
+            {userProfile.type === "google" ? (
+              <Image source={{ uri: userProfile.profilePhoto }} />
+            ) : (
+              <Image
+                source={{ uri: userProfile.profilePhoto }}
+                style={styles.image}
+                resizeMode="center"
+              />
+            )}
           </View>
           <View style={styles.add}>
             <Ionicons
@@ -107,10 +155,10 @@ const Profile = () => {
 
         <View style={styles.infoContainer}>
           <Text style={[styles.text, { fontWeight: "200", fontSize: 36 }]}>
-            {userProfile.firstName} {userProfile.lastName}
+            {userProfile?.firstName} {userProfile?.lastName}
           </Text>
           <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>
-            {userProfile.email}
+            {userProfile?.email}
           </Text>
         </View>
 
@@ -141,19 +189,29 @@ const Profile = () => {
         </View>
 
         <View style={{ marginTop: 32 }}>
-          <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
-            {userPhotos.map((img) => {
-              return (
-                <View key={img._id} style={styles.mediaImageContainer}>
-                  <Image
-                    source={{ uri: img.link }}
-                    style={styles.image}
-                    resizeMode="cover"
-                  ></Image>
-                </View>
-              );
-            })}
-          </ScrollView>
+          <View
+            style={{
+              height: 200,
+            }}
+          >
+            <ScrollView
+              horizontal={true}
+              showsHorizontalScrollIndicator={false}
+            >
+              {userPhotos &&
+                userPhotos.map((img) => {
+                  return (
+                    <View key={img._id} style={styles.mediaImageContainer}>
+                      <Image
+                        source={{ uri: img.link }}
+                        style={styles.image}
+                        resizeMode="cover"
+                      ></Image>
+                    </View>
+                  );
+                })}
+            </ScrollView>
+          </View>
           <View style={styles.mediaCount}>
             <Text
               style={[
@@ -200,7 +258,7 @@ const Profile = () => {
             </View>
           </View>
         </View>
-      </ScrollView>
+      </Animated.ScrollView>
     </SafeAreaView>
   );
 };
