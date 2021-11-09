@@ -46,10 +46,19 @@ const Home = ({ navigation }) => {
     0,
     containerHeight
   );
-
-  const headerHeight = scrollY.interpolate({
-    inputRange: [0, (SIZES.width * 2) / 5],
-    outputRange: [(SIZES.width * 2) / 5, 0],
+  //Header - Animation translate value
+  const headerTranslate = scrollY.interpolate({
+    inputRange: [0, 160],
+    outputRange: [0, -160],
+    extrapolate: "clamp",
+  });
+  //Header - Animation opacity value
+  const opacityValue = Animated.multiply(
+    headerTranslate,
+    new Animated.Value(-1)
+  ).interpolate({
+    inputRange: [0, 160],
+    outputRange: [1, 0],
     extrapolate: "clamp",
   });
 
@@ -157,7 +166,15 @@ const Home = ({ navigation }) => {
   // Giao diện:
   const header = (props) => {
     return (
-      <Animated.View style={styles.header}>
+      <Animated.View
+        style={[
+          styles.header,
+          {
+            transform: [{ translateY: headerTranslate }],
+            opacity: opacityValue,
+          },
+        ]}
+      >
         <View style={styles.headerContent}>
           <Text style={[styles.headerContentFont, styles.headerContentAll]}>
             Tất cả
@@ -186,6 +203,7 @@ const Home = ({ navigation }) => {
           contentContainerStyle={{
             padding: 10,
             alignSelf: "stretch",
+            paddingTop: 160,
           }}
           // innerRef={scrollRef}
           onScroll={Animated.event(
@@ -220,8 +238,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    position: "absolute",
     flex: 1,
     paddingLeft: 20,
+    zIndex: 10,
   },
   headerContent: {
     flex: 1,
@@ -256,7 +276,7 @@ const styles = StyleSheet.create({
   userList: {
     flex: 1,
     flexDirection: "row",
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 0,
   },
   onlineUserContainer: {
