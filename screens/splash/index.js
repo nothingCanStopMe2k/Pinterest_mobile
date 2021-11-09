@@ -1,36 +1,33 @@
-import React, { useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { View, Text, StyleSheet, Animated } from "react-native";
 import LottieView from "lottie-react-native";
 import { images, COLORS, FONTS } from "../../constants";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-  withDelay,
-} from "react-native-reanimated";
+// import Animated, {
+//   useSharedValue,
+//   useAnimatedStyle,
+//   withSpring,
+//   withDelay,
+// } from "react-native-reanimated";
 
 const widthLogo = 250,
   heightLogo = 250,
   speedAnimation = 0.8;
 export default function splash({ navigation }) {
-  const opacity = useSharedValue(0);
-  const scale = useSharedValue(0);
+  const opacity = useRef(new Animated.Value(0)).current;
+  const scale = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    scale.value = withDelay(3 * speedAnimation * 1000, withSpring(1));
-    opacity.value = withDelay(3 * speedAnimation * 1000, withSpring(1));
+    Animated.timing(opacity, {
+      toValue: 1,
+      delay: 3 * speedAnimation * 1000,
+      useNativeDriver: true,
+    }).start();
+    Animated.timing(scale, {
+      toValue: 1,
+      delay: 3 * speedAnimation * 1000,
+      useNativeDriver: true,
+    }).start();
   }, []);
-
-  const rTextStyle = useAnimatedStyle(() => {
-    return {
-      opacity: opacity.value,
-      transform: [
-        {
-          scale: scale.value,
-        },
-      ],
-    };
-  });
 
   return (
     <View
@@ -54,7 +51,15 @@ export default function splash({ navigation }) {
           onAnimationFinish={() => navigation.navigate("signIn")}
         />
       </View>
-      <Animated.View style={[styled.logo, rTextStyle]}>
+      <Animated.View
+        style={[
+          styled.logo,
+          {
+            opacity: opacity,
+            transform: [{ scale: scale }],
+          },
+        ]}
+      >
         <Text style={[styled.title, { transform: [{ translateX: -20 }] }]}>
           N
         </Text>

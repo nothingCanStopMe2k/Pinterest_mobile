@@ -30,9 +30,9 @@ export default function App() {
           screenOptions={{
             headerShown: false,
           }}
-          initialRouteName={"signIn"}
+          initialRouteName={"splash"}
         >
-          {/* <Stack.Screen name="splash" component={splash} /> */}
+          <Stack.Screen name="splash" component={splash} />
           <Stack.Screen name="signUp" component={signUp} />
           <Stack.Screen name="signIn" component={signIn} />
           <Stack.Screen name="main" component={Main} />
