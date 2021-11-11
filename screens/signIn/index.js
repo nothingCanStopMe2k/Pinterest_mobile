@@ -21,11 +21,22 @@ import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogl
 import { auth } from "../../services/firebase/configure";
 import { icons, images, SIZES, COLORS, FONTS } from "../../constants";
 import { showLoading } from "../../redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const signIn = ({ navigation }) => {
   const dispatch = useDispatch();
   useEffect(() => {
     // dispatch(showLoading());
+  }, []);
+
+  useEffect(() => {
+    AsyncStorage.getItem("userInfo")
+      .then((value) => {
+        if (value) {
+          navigation.navigate("main");
+        }}
+      )
+      .catch(console.log("No user"))
   }, []);
 
   const dummyData = [

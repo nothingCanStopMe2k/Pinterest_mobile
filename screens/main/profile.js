@@ -19,11 +19,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { user } from "./../../util/user";
 import { FONTS } from "../../constants";
 import { auth } from "../../services/firebase/configure";
+import AppButton from "../../components/AppButton";
 
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
 
-const Profile = () => {
+const Profile = ({ navigation }) => {
   const [apiError, setApiError] = useState("");
   const [userProfile, setUserProfile] = useState({}); //thông tin người dùng
   const [userPhotos, setUserPhotos] = useState([]); //array hình người đó đăng
@@ -118,6 +119,11 @@ const Profile = () => {
     AsyncStorage.getItem("userInfo").then((ress) => console.log(ress));
   }, []);
 
+  const logout = () => {
+    AsyncStorage.clear();
+    navigation.navigate("signIn");
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <Animated.ScrollView
@@ -160,6 +166,12 @@ const Profile = () => {
           <Text style={[styles.text, { color: "#AEB5BC", fontSize: 14 }]}>
             {userProfile?.email}
           </Text>
+          <AppButton
+            title="Đăng Xuất"
+            bgcolor="red"
+            tcolor="white1"
+            onPress={logout}
+          />
         </View>
 
         <View style={styles.statsContainer}>
