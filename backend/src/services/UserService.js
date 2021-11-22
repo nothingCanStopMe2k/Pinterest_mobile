@@ -84,8 +84,8 @@ export default {
       }
     );
   },
-  post: async (userID, status, link, originalName, photoOfUser) => {
-    let post = new Post({ userID, status, link, originalName, photoOfUser });
+  post: async (userID, status, link, originalName, photoOfUser, tag) => {
+    let post = new Post({ userID, status, link, originalName, photoOfUser, tag });
     return post
       .save()
       .then(async (result) => {
