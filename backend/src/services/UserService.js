@@ -72,20 +72,41 @@ export default {
   },
 
   getProfile: async (userId) => {
-    return User.findOne({ _id: userId }).then(
-      async (user) => {
-        if (user) {
-          return Promise.resolve(user);
+    if (!userId.includes(".com")) {
+      return User.findOne({ _id: userId }).then(
+        async (user) => {
+          if (user) {
+            return Promise.resolve(user);
+          }
+          return Promise.reject(new ServiceError(400, "User is not exists!"));
+        },
+        async (error) => {
+          return Promise.reject(new ServiceError(500, error.message, error));
         }
-        return Promise.reject(new ServiceError(400, "User is not exists!"));
-      },
-      async (error) => {
-        return Promise.reject(new ServiceError(500, error.message, error));
-      }
-    );
+      );
+    } else {
+      return User.findOne({ email: userId }).then(
+        async (user) => {
+          if (user) {
+            return Promise.resolve(user);
+          }
+          return Promise.reject(new ServiceError(400, "User is not exists!"));
+        },
+        async (error) => {
+          return Promise.reject(new ServiceError(500, error.message, error));
+        }
+      );
+    }
   },
   post: async (userID, status, link, originalName, photoOfUser, tag) => {
-    let post = new Post({ userID, status, link, originalName, photoOfUser, tag });
+    let post = new Post({
+      userID,
+      status,
+      link,
+      originalName,
+      photoOfUser,
+      tag,
+    });
     return post
       .save()
       .then(async (result) => {
@@ -108,17 +129,35 @@ export default {
   },
 
   getPhotos: async (userId) => {
-    return Post.find({ userID: userId }).then(
-      async (photos) => {
-        if (photos) {
-          return Promise.resolve(photos);
+    if (!userId.includes(".com")) {
+      return Post.find({ userID: userId }).then(
+        async (photos) => {
+          if (photos) {
+            return Promise.resolve(photos);
+          }
+          return Promise.reject(new ServiceError(400, "Not found any photo!"));
+        },
+        async (error) => {
+          return Promise.reject(new ServiceError(500, error.message, error));
         }
-        return Promise.reject(new ServiceError(400, "Not found any photo!"));
-      },
-      async (error) => {
-        return Promise.reject(new ServiceError(500, error.message, error));
-      }
-    );
+      );
+    } else {
+      return User.find({ email: userId }).then((res) => {
+        return Post.find({ userID: res[0]._id }).then(
+          async (photos) => {
+            if (photos) {
+              return Promise.resolve(photos);
+            }
+            return Promise.reject(
+              new ServiceError(400, "Not found any photo!")
+            );
+          },
+          async (error) => {
+            return Promise.reject(new ServiceError(500, error.message, error));
+          }
+        );
+      });
+    }
   },
   postComment: async (userID, postID, ownerName, linkAvatar, content) => {
     let comment = new Comment({

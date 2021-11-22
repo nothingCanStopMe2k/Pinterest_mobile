@@ -21,7 +21,7 @@ import AppButton from "../../components/AppButton";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { icons, FONTS, COLORS, SIZES, images } from "../../constants";
 import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogle";
-import { hideLoading, showLoading } from "../../redux";
+import { hideLoading, showLoading, addCurrentUser } from "../../redux";
 import { user } from "../../util/user"; //
 
 const signUp = ({ navigation }) => {
@@ -80,6 +80,7 @@ const signUp = ({ navigation }) => {
         .then((res) => {
           user.saveUserStorage(res.token);
           dispatch(hideLoading());
+          dispatch(addCurrentUser(res.token.accessToken, res.token.user));
           navigation.navigate("main");
         })
         .catch((err) => {

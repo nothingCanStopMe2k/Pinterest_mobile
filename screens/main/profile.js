@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   StyleSheet,
   Text,
@@ -23,6 +23,7 @@ import AppButton from "../../components/AppButton";
 
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
+const userReducer = (state) => state.userReducer;
 
 const Profile = ({ navigation }) => {
   const [apiError, setApiError] = useState("");
@@ -30,6 +31,9 @@ const Profile = ({ navigation }) => {
   const [userPhotos, setUserPhotos] = useState([]); //array hình người đó đăng
   const [userVideos, setUserVideos] = useState([]); // array video người đó đăng
   const [mounted, setMounted] = useState(false);
+
+  const userCurrent = useSelector(userReducer);
+  // console.log(userCurrent);
 
   // const scrollY = useRef(new Animated.Value(0)).current;
   // const offSetAnim = useRef(new Animated.Value(0)).current;
@@ -64,47 +68,42 @@ const Profile = ({ navigation }) => {
   // }, [clampedScroll]);
 
   if (!mounted) {
-    AsyncStorage.getItem("userInfo")
-      .then((value) => {
-        const payload = {
-          userID: value ? JSON.parse(value).user : {},
-        };
-        //lấy thông tin người dùng
-        userService
-          .getProfile(payload)
-          .then((res) => {
-            setUserProfile(res);
-          })
-          .catch((err) => {
-            if (err === 400) setApiError("Load fail!!!");
-            else setApiError(err.message);
-          });
+    const payLoad = {
+      userID: userCurrent.userID,
+    };
 
-        //Lấy ảnh, video mà user đó đã đăng
-        userService
-          .getPhotos(payload)
-          .then((res) => {
-            const resultPhoto = res.filter((item) => {
-              if (item.originalName.split(".")[1] !== "mp4") return true;
-              return false;
-            });
-            const resultVideo = res.filter((item) => {
-              if (item.originalName.split(".")[1] === "mp4") return true;
-              return false;
-            });
-            setUserPhotos(resultPhoto.reverse());
-            setUserVideos(resultVideo.reverse());
-          })
-          .catch((err) => {
-            if (err === 400) setApiError("Not found any photo!!!");
-            else setApiError(err.message);
-          });
+    //lấy thông tin người dùng
+    userService
+      .getProfile(payLoad)
+      .then((res) => {
+        setUserProfile(res);
       })
       .catch((err) => {
-        console.log(err);
-        return {};
+        if (err === 400) setApiError("Load fail!!!");
+        else setApiError(err.message);
+      });
+
+    //Lấy ảnh, video mà user đó đã đăng
+    userService
+      .getPhotos(payLoad)
+      .then((res) => {
+        const resultPhoto = res.filter((item) => {
+          if (item.originalName.split(".")[1] !== "mp4") return true;
+          return false;
+        });
+        const resultVideo = res.filter((item) => {
+          if (item.originalName.split(".")[1] === "mp4") return true;
+          return false;
+        });
+        setUserPhotos(resultPhoto.reverse());
+        setUserVideos(resultVideo.reverse());
+      })
+      .catch((err) => {
+        if (err === 400) setApiError("Not found any photo!!!");
+        else setApiError(err.message);
       });
   }
+
   useEffect(() => {
     setMounted(true);
 
@@ -116,13 +115,24 @@ const Profile = ({ navigation }) => {
     //   })
     //   .catch(() => console.log("Error"));
     // AsyncStorage.removeItem("userInfo");
-    AsyncStorage.getItem("userInfo").then((ress) => console.log(ress));
+    // AsyncStorage.getItem("userInfo").then((res) =>
+    //   console.log("User current: ", res["user"])
+    // );
   }, []);
 
   const logout = () => {
-    AsyncStorage.clear();
-    navigation.navigate("signIn");
-  }
+    if (userCurrent.accessToken == "GOOGLE") {
+      auth
+        .signOut()
+        .then(() => {
+          navigation.navigate("signIn");
+        })
+        .catch(() => console.log("Error"));
+    } else {
+      AsyncStorage.clear();
+      navigation.navigate("signIn");
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -139,15 +149,11 @@ const Profile = ({ navigation }) => {
 
         <View style={{ alignSelf: "center" }}>
           <View style={styles.profileImage}>
-            {userProfile.type === "google" ? (
-              <Image source={{ uri: userProfile.profilePhoto }} />
-            ) : (
-              <Image
-                source={{ uri: userProfile.profilePhoto }}
-                style={styles.image}
-                resizeMode="center"
-              />
-            )}
+            <Image
+              source={{ uri: userProfile.profilePhoto }}
+              style={styles.image}
+              resizeMode="center"
+            />
           </View>
           <View style={styles.add}>
             <Ionicons
