@@ -2,6 +2,7 @@ import User from "../models/User";
 import UserService from "../services/UserService";
 import Log from "../core/logging";
 import { googleAPI } from "../services/GoogleDrive";
+import createTag from "../services/ImaggaService";
 
 export default {
   register: async (req, res, next) => {
@@ -54,7 +55,6 @@ export default {
   },
   getProfile: async (req, res) => {
     const user = req.user;
-    console.log("REQ; ", req.query);
     UserService.getProfile(req.query.userID)
       .then((result) => {
         return res.status(200).json(result);
@@ -71,7 +71,10 @@ export default {
 
     googleAPI(req, res, err).then((path) => {
       link = path;
-      UserService.post(userID, status, link, originalName, photoOfUser)
+      let tag;
+      createTag(link).then(tags =>{
+        tag = tags;
+        UserService.post(userID, status, link, originalName, photoOfUser, tag)
         .then((result) => {
           return res.status(200).json(result);
         })
@@ -79,6 +82,7 @@ export default {
           Log.error("Post", error.message, error);
           return res.status(error.code).json(error);
         });
+      })
     });
   },
   postWithTicket: async (req, res, err) => {

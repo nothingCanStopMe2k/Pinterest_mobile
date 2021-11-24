@@ -20,13 +20,11 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogle";
 import { auth } from "../../services/firebase/configure";
 import { icons, images, SIZES, COLORS, FONTS } from "../../constants";
-import { showLoading } from "../../redux";
+import { showLoading, addCurrentUser } from "../../redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const signIn = ({ navigation }) => {
   const dispatch = useDispatch();
-  useEffect(() => {
-    // dispatch(showLoading());
-  }, []);
 
   const dummyData = [
     {
@@ -68,12 +66,31 @@ const signIn = ({ navigation }) => {
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
+      // Nếu người dùng đăng nhập bằng tài khoản google.
       if (user) {
-        navigation.replace("main");
+        navigation.navigate("main");
+        dispatch(addCurrentUser("GOOGLE", user.email));
+      }
+      // Nếu người dùng đăng nhập bằng tài khoản email bình thường.
+      else {
+        AsyncStorage.getItem("userInfo")
+          .then((value) => {
+            if (value) {
+              navigation.navigate("main");
+              dispatch(
+                addCurrentUser(
+                  JSON.parse(value).accessToken,
+                  JSON.parse(value).user
+                )
+              );
+            }
+          })
+          .catch(console.log("No user"));
       }
     });
     return unsubscribe;
   }, []);
+
   const renderFeatures = () => {
     return (
       <Animated.FlatList

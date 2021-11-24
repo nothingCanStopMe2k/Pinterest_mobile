@@ -7,7 +7,8 @@ const post = (data) => requestService.post(requestUrl.post, data);
 
 const getPhotos = (data) => requestService.get(requestUrl.getPhotos, data);
 
-const postWithTicket = (data) => requestService.post(requestUrl.postWithTicket, data);
+const postWithTicket = (data) =>
+  requestService.post(requestUrl.postWithTicket, data);
 
 const postComment = (data) => requestService.post(requestUrl.postComment, data);
 
