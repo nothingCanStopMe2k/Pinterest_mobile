@@ -217,7 +217,7 @@ const Home = ({ navigation }) => {
           data={dataFromDB}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, i }) => (
-            <Pin key={i.toString()} index={i} item={item} />
+            <Pin key={i.toString()} index={i} item={item} navigation={navigation}/>
           )}
         />
       </Animated.View>

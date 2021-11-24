@@ -1,12 +1,15 @@
 import React, { useMemo } from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity, navigation } from "react-native";
 import { SIZES, icons, FONTS, COLORS } from "../constants";
 import { LinearGradient } from "expo-linear-gradient";
 
 const Pin = (props) => {
-  const { index, item } = props;
+  const { index, item, navigation } = props;
 
   return (
+    <TouchableOpacity onPress={() => { navigation.navigate("detail", {
+      item: item
+    }); }}>
     <View>
       <View
         style={{
@@ -96,6 +99,7 @@ const Pin = (props) => {
         </View>
       </View>
     </View>
+    </TouchableOpacity>
   );
 };
 
