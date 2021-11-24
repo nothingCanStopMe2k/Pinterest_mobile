@@ -47,15 +47,15 @@ const get = (path = "", params = {}, headers = DEF_HEADERS) =>
 //       .catch((err) => Promise.reject(err.response ? err.response.data : err))
 //   );
 
-// const getWithoutTrackLoading = (
-//   path = "",
-//   params = {},
-//   headers = DEF_HEADERS
-// ) =>
-//   axiosInstance
-//     .get(path, { headers, params })
-//     .then((res) => res.data)
-//     .catch((err) => Promise.reject(err.response ? err.response.data : err));
+const getWithoutTrackLoading = (
+  path = "",
+  params = {},
+  headers = DEF_HEADERS
+) =>
+  axiosInstance
+    .get(path, { headers, params })
+    .then((res) => res.data)
+    .catch((err) => Promise.reject(err.response ? err.response.data : err));
 
 // const refreshToken = (payload) =>
 //   axios
@@ -102,4 +102,4 @@ const get = (path = "", params = {}, headers = DEF_HEADERS) =>
 
 // axiosInstance.interceptors.request.use(requestHandler); //Lien quan den viec chan lai trc khi den backend
 
-export const requestService = { post, get };
+export const requestService = { post, get, getWithoutTrackLoading };
