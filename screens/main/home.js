@@ -33,8 +33,7 @@ const Home = ({ navigation }) => {
   const [datasForHeader, setDatasForHeader] = useState([]);
   const scrollY = useRef(new Animated.Value(0)).current;
   const offSetAnim = useRef(new Animated.Value(0)).current;
-  const uid = useSelector(state => state.userReducer.userID);
-  console.log(uid)
+  const uid = useSelector(state => state.userReducer.userID); //lấy userId trên redux
 
   const dispatch = useDispatch();
 
@@ -91,16 +90,6 @@ const Home = ({ navigation }) => {
     offSetAnim.addListener(({ value }) => {
       _offsetValue = value;
     });
-
-    //get profile tại home rồi dispatch lên redux
-    userService
-        .getProfile({ userID: uid })
-        .then((res) => {
-          dispatch(getCurrentUser(res));
-        })
-        .catch((err) => {
-          console.log("fail get profile")
-        });
   }, []);
   useEffect(() => {
     const bottomTabTranslate = clampedScroll.interpolate({
@@ -116,6 +105,18 @@ const Home = ({ navigation }) => {
 
     dispatch(scrollDownHome(bottomTabTranslate, bottomTabOpacity));
   }, [clampedScroll]);
+
+  //get profile tại home rồi dispatch lên redux
+  useEffect(() => {
+    userService
+        .getProfile({ userID: uid })
+        .then((res) => {
+          dispatch(getCurrentUser(res));
+        })
+        .catch((err) => {
+          console.log("fail get profile")
+        });
+  }, [uid]);
 
   var scrollEndTimer = null;
   const onMomentumScrollBegin = () => {

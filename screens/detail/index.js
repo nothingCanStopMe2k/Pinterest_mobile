@@ -5,7 +5,7 @@ import Comment from "../../components/Comment";
 
 const detail = ({ route, navigation }) => {
     const { item } = route.params; 
-    console.log("Chi tiết hình ảnh:", item) // chi tiết hình ảnh, làm xong thì xóa dòng này nha <3
+    //console.log("Chi tiết hình ảnh:", item) // chi tiết hình ảnh, làm xong thì xóa dòng này nha <3
 
   return (
     <View>

@@ -38,8 +38,8 @@ router.post(
 );
 router.post(
   "/postComment",
-  JWTMiddleware,
-  upload.single(""),
+  /*JWTMiddleware,*/
+  /*upload.single(""),*/
   controller.postComment
 );
 router.post("/registerWithGoogle", controller.registerWithGoogle);
