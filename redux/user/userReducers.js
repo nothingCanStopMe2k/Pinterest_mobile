@@ -1,4 +1,5 @@
 import { CURRENT_USER } from "./userType";
+import { GET_CURRENT_USER } from "./userType";
 
 // ========================
 // ========================
@@ -6,6 +7,7 @@ import { CURRENT_USER } from "./userType";
 const initialState = {
   accessToken: "",
   userID: "",
+  user: {}
 };
 
 const userReducer = (state = initialState, action) => {
@@ -15,6 +17,11 @@ const userReducer = (state = initialState, action) => {
         ...state,
         accessToken: action.payLoad.accessToken,
         userID: action.payLoad.userID,
+      };
+    case GET_CURRENT_USER:
+      return {
+        ...state,
+        user: action.payLoad
       };
     default:
       return state;

@@ -82,7 +82,7 @@ const signUp = ({ navigation }) => {
           user.saveUserStorage(res.token);
           dispatch(hideLoading());
           dispatch(addCurrentUser(res.token.accessToken, res.token.user));
-          navigation.navigate("main");
+          navigation.navigate("main")
         })
         .catch((err) => {
           dispatch(hideLoading());

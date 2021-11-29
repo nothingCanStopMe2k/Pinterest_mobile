@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   View,
   Text,
@@ -22,6 +22,8 @@ import Marsonry from "../../components/Marsonry";
 import Pin from "../../components/Pin";
 import { COLORS, SIZES } from "../../constants";
 import { adminService } from "../../services/admin.service";
+import { userService } from "../../services/user.service";
+import { getCurrentUser } from "../../redux/user/userAction";
 
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
@@ -31,6 +33,8 @@ const Home = ({ navigation }) => {
   const [datasForHeader, setDatasForHeader] = useState([]);
   const scrollY = useRef(new Animated.Value(0)).current;
   const offSetAnim = useRef(new Animated.Value(0)).current;
+  const uid = useSelector(state => state.userReducer.userID);
+  console.log(uid)
 
   const dispatch = useDispatch();
 
@@ -87,6 +91,16 @@ const Home = ({ navigation }) => {
     offSetAnim.addListener(({ value }) => {
       _offsetValue = value;
     });
+
+    //get profile tại home rồi dispatch lên redux
+    userService
+        .getProfile({ userID: uid })
+        .then((res) => {
+          dispatch(getCurrentUser(res));
+        })
+        .catch((err) => {
+          console.log("fail get profile")
+        });
   }, []);
   useEffect(() => {
     const bottomTabTranslate = clampedScroll.interpolate({
