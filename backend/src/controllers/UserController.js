@@ -3,6 +3,8 @@ import UserService from "../services/UserService";
 import Log from "../core/logging";
 import { googleAPI } from "../services/GoogleDrive";
 import createTag from "../services/ImaggaService";
+import contentBasedRecommender from "../services/contentBasedRecommender";
+import FileService from "../services/FileService";
 
 export default {
   register: async (req, res, next) => {
@@ -72,17 +74,17 @@ export default {
     googleAPI(req, res, err).then((path) => {
       link = path;
       let tag;
-      createTag(link).then(tags =>{
+      createTag(link).then((tags) => {
         tag = tags;
         UserService.post(userID, status, link, originalName, photoOfUser, tag)
-        .then((result) => {
-          return res.status(200).json(result);
-        })
-        .catch((error) => {
-          Log.error("Post", error.message, error);
-          return res.status(error.code).json(error);
-        });
-      })
+          .then((result) => {
+            return res.status(200).json(result);
+          })
+          .catch((error) => {
+            Log.error("Post", error.message, error);
+            return res.status(error.code).json(error);
+          });
+      });
     });
   },
   postWithTicket: async (req, res, err) => {
@@ -132,6 +134,39 @@ export default {
       profilePhoto,
       type
     )
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch((error) => {
+        Log.error("RegisterWithGoogle", error.message, error);
+        return res.status(error.code).json(error);
+      });
+  },
+  getRecommend: async (req, res, err) => {
+    const query = req.query;
+    let userFavTags = {
+      id: query.id,
+      content: query.favTags.join(" "),
+    };
+
+    let dataRecommend = [];
+
+    await FileService.getAllFile().then((res) => {
+      for (var i of res) {
+        if (i.tag.length > 0) {
+          let dataImages = {
+            id: i._id,
+            content: i.tag.join(" "),
+          };
+          dataRecommend.push(dataImages);
+        }
+      }
+    });
+
+    // Push userFavTags
+    dataRecommend.push(userFavTags);
+
+    contentBasedRecommender(dataRecommend)
       .then((result) => {
         return res.status(200).json(result);
       })

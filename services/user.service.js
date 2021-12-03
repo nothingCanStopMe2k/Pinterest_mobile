@@ -12,10 +12,14 @@ const postWithTicket = (data) =>
 
 const postComment = (data) => requestService.post(requestUrl.postComment, data);
 
+const getRecommend = (data) =>
+  requestService.get(requestUrl.getRecommend, data);
+
 export const userService = {
   getProfile,
   post, //Post khi user post ảnh mới lên
   getPhotos,
   postWithTicket,
   postComment,
+  getRecommend,
 };

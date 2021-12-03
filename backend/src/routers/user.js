@@ -43,5 +43,6 @@ router.post(
   controller.postComment
 );
 router.post("/registerWithGoogle", controller.registerWithGoogle);
+router.get("/getRecommend", controller.getRecommend);
 
 export default router;

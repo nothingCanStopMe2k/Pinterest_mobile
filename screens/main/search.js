@@ -3,32 +3,42 @@ import { StyleSheet, Text, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import { fileService } from "../../services/file.service";
+import { userService } from "../../services/user.service";
 
 const Search = () => {
-  const [allFile, setAllFile] = useState([]);
+  const [dataRecommend, setDataRecommend] = useState([]);
 
-  useEffect(() => {
-    fileService.getAllFile().then((res) => {
-      setAllFile(res);
-    });
-  }, []);
+  useEffect(() => {}, []);
 
-  const show = () => {
-    let count = 0;
-    for (var i of allFile) {
-      if (i.tag.length > 0) {
-        count++;
-      }
-    }
-    console.log(
-      "Tong cong " + count + "/" + allFile.length + " files duoc gan the"
-    );
+  const start = () => {
+    const recommendObject = {
+      // lấy thông tin User đang đăng nhập gắn vào đây đây, do chưa có dữ liệu favTags nên lấy gtri mặc định
+      id: "id",
+      favTags: [
+        "animes",
+        "girl beautiful",
+        "husky",
+        "blue",
+        "joker",
+        "cat",
+        "dragon",
+      ],
+    };
+    userService
+      .getRecommend(recommendObject)
+      .then((res) => {
+        setDataRecommend(res);
+        console.log("DATA RECOMMEND: ", res);
+      })
+      .catch((err) => {
+        console.log("ERR getRecommend: ", err);
+      });
   };
 
   return (
     <View>
-      <TouchableOpacity onPress={() => show()}>
-        <Text>Show tat ca anh duoc gan tag trong database</Text>
+      <TouchableOpacity onPress={() => start()}>
+        <Text>Bat dau algorithm</Text>
       </TouchableOpacity>
     </View>
   );
