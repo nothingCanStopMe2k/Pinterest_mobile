@@ -11,7 +11,7 @@ const DEF_HEADERS = {
   // "Content-Type": "multipart/form-data",
 };
 
-const BASE_URL = "http://192.168.1.105:5000";
+const BASE_URL = "http://192.168.1.4:5000";
 
 const axiosInstance = axios.create({
   baseURL: BASE_URL,
