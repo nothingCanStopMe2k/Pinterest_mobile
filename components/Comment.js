@@ -10,63 +10,63 @@ import AppButton from "./AppButton";
 import { fileService } from "../services/file.service";
 import { userService } from "../services/user.service";
 
-const Comment = ({ postID }) => {
-    const [allCommentOfPhoto, setAllCommentOfPhoto] = React.useState([]);
-    const user = useSelector(state => state.userReducer.user);
-    const { control, handleSubmit } = useForm();
+// const Comment = ({ postID }) => {
+//     const [allCommentOfPhoto, setAllCommentOfPhoto] = React.useState([]);
+//     const user = useSelector(state => state.userReducer.user);
+//     const { control, handleSubmit } = useForm();
 
-    React.useEffect(() => {
-        fileService.getAllCommentById(postID)
-          .then(res => setAllCommentOfPhoto(res))
-          .catch(err => console.log("ERR: ", err.message));
-    }, []);
+//     React.useEffect(() => {
+//         fileService.getAllCommentById(postID)
+//           .then(res => setAllCommentOfPhoto(res))
+//           .catch(err => console.log("ERR: ", err.message));
+//     }, []);
 
-    //console.log("Tất cả bình luận", allCommentOfPhoto); // bình luận, làm xong xóa giúp nha <3
+//     //console.log("Tất cả bình luận", allCommentOfPhoto); // bình luận, làm xong xóa giúp nha <3
 
-    const onSubmit = async (data) => {
-      const formData = {
-        userID: user._id,
-        postID: postID,
-        ownerName: user.firstName + " " + user.lastName,
-        linkAvatar: user.profilePhoto,
-        content: data.content
-      }
+//     const onSubmit = async (data) => {
+//       const formData = {
+//         userID: user._id,
+//         postID: postID,
+//         ownerName: user.firstName + " " + user.lastName,
+//         linkAvatar: user.profilePhoto,
+//         content: data.content
+//       }
 
-      await userService.postComment(formData)
-      .then(() => {
-        console.log("thành công")
-      })
-      .catch(err => {
-        console.log("fail")
-      });
-    };
+//       await userService.postComment(formData)
+//       .then(() => {
+//         console.log("thành công")
+//       })
+//       .catch(err => {
+//         console.log("fail")
+//       });
+//     };
 
-  return (
-    <View>
-      <Text>This is Comment</Text>
+//   return (
+//     <View>
+//       <Text>This is Comment</Text>
       
-      {/* ô nhập bình luận */}
-      <AppTextInput
-          placeholder="Write your comment"
-          autoCapitalize="none"
-          autoCorrect={false}
-          name="content" //tên giá trị nhập
-          control={control} //láy giá trị nhập
-        />
+//       {/* ô nhập bình luận */}
+//       <AppTextInput
+//           placeholder="Write your comment"
+//           autoCapitalize="none"
+//           autoCorrect={false}
+//           name="content" //tên giá trị nhập
+//           control={control} //láy giá trị nhập
+//         />
 
-      <AppButton
-          title="Send"
-          bgcolor="red"
-          tcolor="white1"
-          onPress={handleSubmit(onSubmit)}
-      />
-    </View>
-  );
-};
+//       <AppButton
+//           title="Send"
+//           bgcolor="red"
+//           tcolor="white1"
+//           onPress={handleSubmit(onSubmit)}
+//       />
+//     </View>
+//   );
+// };
 
-export default Comment;
+// export default Comment;
 
-const styles = StyleSheet.create({});
+// const styles = StyleSheet.create({});
 
 
 
@@ -76,16 +76,16 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView} from 'reac
 import {Divider} from 'react-native-elements'
 import { AntDesign } from '@expo/vector-icons'; 
 
-const Detail = ({ route, navigation }) => {
+const Comment = ({ route, navigation }) => {
     //const { item } = route.params; 
     return (
         <View>
-            <DetailHeader />
+            <CommentHeader />
         </View>
     )
 }
 
-const DetailHeader = () => (
+const CommentHeader = () => (
     <View
     style={{
         height: '100%',
@@ -106,69 +106,6 @@ const DetailHeader = () => (
         <ScrollView
             showsHorizontalScrollIndicator={false}
         >
-            <View style={{marginBottom: 10}}>
-            <View
-                style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                }}>
-                <View style={{flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                    <Image source={{uri: 'https://reactnative.dev/img/tiny_logo.png'}} style={styles.story}/>
-                    <View style={{flexDirection: 'row'}}>
-                        <Text style={{fontWeight: '500', marginRight: 10}}>
-                            username
-                        </Text>
-                        <Text style={{fontWeight: '300',color: 'gray'}}>
-                            10 tháng
-                        </Text>
-                    </View>
-
-                </View>
-                
-            </View>
-        
-        {/* //render comment here  */}
-            <View style={{
-                paddingLeft: 20,
-                width: '90%'
-            }}>
-                <View style={styles.mediaImageContainer}>
-                    <Image
-                        source={{ uri: 'https://picsum.photos/200' }}
-                        style={styles.image}
-                        resizeMode="cover"
-                    ></Image>
-                </View>
-                <Text style={{fontWeight: '500', fontSize: '16'}}>This is text comment</Text>
-                <View style={{
-                    marginTop: 10,
-                    flexDirection: 'row',
-                    justifyContent: 'space-between'
-                }}>
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={{flexDirection: 'row'}}>
-                            <AntDesign name="heart" size={18} color="black" />
-                        </TouchableOpacity>
-                        <Text>19</Text>
-                        <TouchableOpacity style={{marginRight: 10, marginLeft: 10}}>
-                            <Text>Trả lời</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity>
-                            <AntDesign name="ellipsis1" size={18} color="black" />
-                        </TouchableOpacity>
-                    </View>
-                    <View style={{flexDirection: 'row'}}>
-                        <TouchableOpacity style={{flexDirection: 'row'}}>
-                            <AntDesign name="like1" size={18} color="black" />
-                        </TouchableOpacity>
-                        <Text style={{marginRight: 2, marginLeft: 2}}>Hữu ích</Text>
-                        <Text>5</Text>
-                    </View>
-                </View>
-            </View>
-            </View>
-
             <View>
             <View
                 style={{
@@ -281,4 +218,4 @@ const styles = StyleSheet.create({
         width: undefined,
     }
 })
-export default Detail;
+export default Comment;
