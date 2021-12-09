@@ -1,19 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { Divider } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
+import { FONTS } from "../../constants";
+import { fileService } from "../../services/file.service";
+
+let item;
 
 const Detail = ({ route, navigation }) => {
-  const { item } = route.params;
-  console.log("ITEM: ", item);
+  item = route.params.item;
+  const [numberLike, setNumberLike] = useState(0);
+  const [isLike, setIsLike] = useState(false);
+  useEffect(() => {
+    setNumberLike(item.count);
+  }, []);
+
+  const increaseLike = async () => {
+    setIsLike(!isLike);
+    setNumberLike(!isLike ? numberLike + 1 : numberLike - 1);
+    let post = {
+      postID: item._id,
+      count: !isLike ? item.count + 1 : item.count,
+      views: item.views + 1,
+    };
+
+    await fileService
+      .updateFileById(post)
+      .then((res) => {
+        console.log("RES: OK LIKE SUCCESS! ");
+      })
+      .catch((err) => {
+        console.log("Something Wrong: ", err);
+      });
+  };
 
   return (
     <View>
       <DetailImage />
       <Divider width={1} orientation="vertical" />
-      <DetailHeader />
+      <DetailHeader
+        isLike={isLike}
+        increaseLike={increaseLike}
+        numberLike={numberLike}
+      />
     </View>
   );
 };
@@ -27,7 +58,7 @@ const DetailImage = () => (
     }}
   >
     <Image
-      source={{ uri: "https://picsum.photos/200/300" }}
+      source={{ uri: `${item.link}` }}
       style={{ height: "100%", resizeMode: "cover" }}
     />
     <TouchableOpacity style={styles.icon0}>
@@ -42,54 +73,83 @@ const DetailImage = () => (
   </View>
 );
 
-const DetailHeader = () => (
-  <View
-    style={{
-      height: "25%",
-      padding: 10,
-      position: "relative",
-    }}
-  >
+const DetailHeader = (props) => {
+  return (
     <View
       style={{
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
+        height: "25%",
+        padding: 10,
+        position: "relative",
       }}
     >
-      <View style={{ flexDirection: "row", alignItems: "center" }}>
-        <Image
-          source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
-          style={styles.story}
-        />
-        <View>
-          <Text style={{ fontWeight: "500" }}>username</Text>
-          <Text style={{ fontWeight: "300" }}>464 người theo dõi</Text>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+          <Image
+            source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
+            style={styles.story}
+          />
+          <View>
+            <Text style={{ fontWeight: "500" }}>{item.photoOfUser}</Text>
+            <Text style={{ fontWeight: "300" }}>{item.originalName}</Text>
+          </View>
         </View>
+        <TouchableOpacity style={styles.btn}>
+          <Text>Theo dõi</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.btn}>
-        <Text>Theo dõi</Text>
+      <Text
+        style={{
+          marginTop: 10,
+          fontSize: 25,
+        }}
+      >
+        {item.status}
+      </Text>
+
+      <TouchableOpacity style={styles.icon2}>
+        <Ionicons name="chatbubble" size={40} color="black" />
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.icon3}>
+        <Text
+          style={{
+            ...FONTS.h3,
+            color: "white",
+            textAlign: "center",
+          }}
+        >
+          Lưu
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={props.increaseLike} style={styles.icon1}>
+        <View
+          style={{
+            flexDirection: "row",
+          }}
+        >
+          <Text
+            style={{
+              ...FONTS.h1,
+              paddingRight: 5,
+            }}
+          >
+            {props.numberLike}
+          </Text>
+          {!props.isLike ? (
+            <AntDesign name="heart" size={40} color="#d3d3d3" />
+          ) : (
+            <AntDesign name="heart" size={40} color="black" />
+          )}
+        </View>
       </TouchableOpacity>
     </View>
-    <Text
-      style={{
-        marginTop: 10,
-      }}
-    >
-      This is my status{" "}
-    </Text>
-
-    <TouchableOpacity style={styles.icon2}>
-      <Ionicons name="chatbubble" size={40} color="black" />
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.icon3}>
-      <Text>Lưu</Text>
-    </TouchableOpacity>
-    <TouchableOpacity style={styles.icon1}>
-      <AntDesign name="heart" size={40} color="black" />
-    </TouchableOpacity>
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   story: {
@@ -128,10 +188,12 @@ const styles = StyleSheet.create({
   icon3: {
     backgroundColor: "#EC255A",
     borderRadius: 18,
+    width: 100,
     padding: 10,
     position: "absolute",
+    textAlign: "center",
     bottom: 10,
-    left: "48%",
+    left: "40%",
   },
   icon5: {
     position: "absolute",
@@ -140,21 +202,3 @@ const styles = StyleSheet.create({
   },
 });
 export default Detail;
-
-//phần cũ của tình
-// const detail = ({ route, navigation }) => {
-//     const { item } = route.params;
-//     //console.log("Chi tiết hình ảnh:", item) // chi tiết hình ảnh, làm xong thì xóa dòng này nha <3
-
-//   return (
-//     <View>
-//       <Text>This is detail screens</Text>
-
-//       <Comment postID={item._id}/>
-//     </View>
-//   );
-// };
-
-// export default detail;
-
-// const styles = StyleSheet.create({});
