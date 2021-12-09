@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   View,
@@ -14,11 +14,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FONTS, COLORS } from "../../constants";
 import { fileService } from "../../services/file.service";
+import { userService } from "../../services/user.service";
 import ModalPopUp from "../../components/Modal";
-import { TextInput } from "react-native-gesture-handler";
+import {
+  TextInput,
+  TouchableWithoutFeedback,
+} from "react-native-gesture-handler";
 import { hideComment, showComment } from "../../redux";
 
 let item;
+const userReducer = (state) => state.userReducer;
 
 const Detail = ({ route, navigation }) => {
   item = route.params.item;
@@ -28,9 +33,14 @@ const Detail = ({ route, navigation }) => {
 
   useEffect(() => {
     setNumberLike(item.count);
-    fileService.getAllCommentById(item._id).then((res) => {
-      setAllComment(res);
-    });
+    fileService
+      .getAllCommentById(item._id)
+      .then((res) => {
+        setAllComment(res);
+      })
+      .catch((err) => {
+        console.log(err.message);
+      });
   }, []);
 
   const increaseLike = async () => {
@@ -177,13 +187,57 @@ const ModalComment = (props) => {
   const visibleProp = (state) => state.commentReducer.visible;
   const dispatch = useDispatch();
   const visible = useSelector(visibleProp);
+  const userCurrent = useSelector(userReducer);
+  let commentArray = props.allComment;
+  const [userProfile, setUserProfile] = useState({}); //thông tin người dùng
+  const [comment, setComment] = useState();
+  let textInput = useRef(); //Dung de clear textInput sau khi comment
 
-  console.log("AC: ", props.allComment);
+  useEffect(() => {
+    const payLoad = {
+      userID: userCurrent.userID,
+    };
+
+    //lấy thông tin người dùng
+    userService
+      .getProfile(payLoad)
+      .then((res) => {
+        setUserProfile(res);
+      })
+      .catch((err) => {
+        console.log("ERROR GET PROFILE USER: ", err);
+      });
+  }, []);
+
+  const handlePostComment = async () => {
+    if (!comment) return;
+    else {
+      let data = {
+        userID: userProfile._id,
+        postID: item._id,
+        ownerName: userProfile.firstName + " " + userProfile.lastName,
+        linkAvatar: userProfile.profilePhoto,
+        content: comment,
+      };
+
+      await userService
+        .postComment(data)
+        .then((res) => {
+          console.log("OK COMMENT SUCCESS!");
+        })
+        .catch((err) => {
+          console.log("ERR POST COMMENT: ", err);
+        });
+
+      textInput.clear();
+    }
+  };
+
   return (
     <ModalPopUp visible={visible}>
       <View
         style={{
-          height: "90%",
+          height: "95%",
           width: "100%",
           padding: 0,
         }}
@@ -206,59 +260,62 @@ const ModalComment = (props) => {
         <Divider width={5} orientation="vertical" />
 
         <ScrollView showsHorizontalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginTop: 10,
-              }}
-            >
-              <Image
-                source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
-                style={styles.story}
-              />
+          {commentArray.map((item, _id) => {
+            return (
+              <View key={_id}>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      alignItems: "center",
+                      marginTop: 10,
+                    }}
+                  >
+                    <Image
+                      source={{
+                        uri: `${item.linkAvatar}`,
+                      }}
+                      style={styles.story}
+                    />
 
-              <View style={{ flexDirection: "row" }}>
-                <Text style={{ fontWeight: "500", marginRight: 10 }}>
-                  username
-                </Text>
-                <Text style={{ fontWeight: "300", color: "gray" }}>
-                  10 tháng
-                </Text>
+                    <View style={{ flexDirection: "row" }}>
+                      <Text style={{ fontWeight: "500", marginRight: 10 }}>
+                        {item.ownerName}
+                      </Text>
+                      <Text style={{ fontWeight: "300", color: "gray" }}>
+                        {item.createdAt.slice(0, 10)}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    paddingLeft: 20,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontWeight: "500",
+                      fontSize: 16,
+                      marginTop: 0,
+                      marginLeft: 20,
+                    }}
+                  >
+                    {item.content}
+                  </Text>
+                </View>
               </View>
-            </View>
-          </View>
-          <View
-            style={{
-              paddingLeft: 20,
-            }}
-          >
-            <Text
-              style={{
-                fontWeight: "500",
-                fontSize: 16,
-                marginTop: 0,
-                marginLeft: 20,
-              }}
-            >
-              This is text comment abasjdbasjdbasjdbjsabdajsbdjasb
-            </Text>
-          </View>
+            );
+          })}
         </ScrollView>
         <Divider width={1} orientation="vertical" />
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "flex-start",
-          }}
-        >
+        <View>
           <View
             style={{
               flexDirection: "row",
@@ -267,21 +324,35 @@ const ModalComment = (props) => {
             }}
           >
             <Image
-              source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
+              source={{ uri: `${userProfile.profilePhoto}` }}
               style={styles.story}
             />
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity style={styles.btn1}>
                 <TextInput
+                  ref={(input) => {
+                    textInput = input;
+                  }}
                   placeholder="Add comment"
                   style={{
                     ...FONTS.h3,
                   }}
+                  onChangeText={(text) => setComment(text)}
                 />
               </TouchableOpacity>
             </View>
           </View>
         </View>
+        <TouchableOpacity
+          onPress={() => handlePostComment()}
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <AntDesign name="QQ" size={45} color="black" />
+        </TouchableOpacity>
       </View>
     </ModalPopUp>
   );
