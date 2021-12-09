@@ -8,6 +8,7 @@ const postWithTicket = "api/user/postWithTicket";
 const getPhotos = "api/user/getPhotos";
 const postComment = "api/user/postComment";
 const registerWithGoogle = "api/user/registerWithGoogle";
+const getRecommend = "/api/user/getRecommend";
 
 const getFileById = "api/file/getFileById";
 const deleteFileById = "api/file/deleteFileById";
@@ -36,4 +37,5 @@ export const requestUrl = {
   updateFileById,
   registerWithGoogle,
   getAllUser,
+  getRecommend,
 };
