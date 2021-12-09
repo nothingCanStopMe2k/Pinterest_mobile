@@ -1,11 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from "react-native";
 import { Divider } from "react-native-elements";
 import { AntDesign } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
-import { FONTS } from "../../constants";
+import { FONTS, COLORS } from "../../constants";
 import { fileService } from "../../services/file.service";
+import ModalPopUp from "../../components/Modal";
+import { TextInput } from "react-native-gesture-handler";
+import { hideComment, showComment } from "../../redux";
 
 let item;
 
@@ -13,8 +24,13 @@ const Detail = ({ route, navigation }) => {
   item = route.params.item;
   const [numberLike, setNumberLike] = useState(0);
   const [isLike, setIsLike] = useState(false);
+  const [allComment, setAllComment] = useState([]);
+
   useEffect(() => {
     setNumberLike(item.count);
+    fileService.getAllCommentById(item._id).then((res) => {
+      setAllComment(res);
+    });
   }, []);
 
   const increaseLike = async () => {
@@ -38,6 +54,7 @@ const Detail = ({ route, navigation }) => {
 
   return (
     <View>
+      <ModalComment allComment={allComment} />
       <DetailImage />
       <Divider width={1} orientation="vertical" />
       <DetailHeader
@@ -74,6 +91,8 @@ const DetailImage = () => (
 );
 
 const DetailHeader = (props) => {
+  const dispatch = useDispatch();
+
   return (
     <View
       style={{
@@ -112,7 +131,10 @@ const DetailHeader = (props) => {
         {item.status}
       </Text>
 
-      <TouchableOpacity style={styles.icon2}>
+      <TouchableOpacity
+        onPress={() => dispatch(showComment())}
+        style={styles.icon2}
+      >
         <Ionicons name="chatbubble" size={40} color="black" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.icon3}>
@@ -148,6 +170,120 @@ const DetailHeader = (props) => {
         </View>
       </TouchableOpacity>
     </View>
+  );
+};
+
+const ModalComment = (props) => {
+  const visibleProp = (state) => state.commentReducer.visible;
+  const dispatch = useDispatch();
+  const visible = useSelector(visibleProp);
+
+  console.log("AC: ", props.allComment);
+  return (
+    <ModalPopUp visible={visible}>
+      <View
+        style={{
+          height: "90%",
+          width: "100%",
+          padding: 0,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "center",
+            marginBottom: 5,
+          }}
+        >
+          <TouchableOpacity
+            onPress={() => dispatch(hideComment())}
+            style={{ position: "absolute", left: 0, top: -2 }}
+          >
+            <AntDesign name="close" size={24} color="black" />
+          </TouchableOpacity>
+          <Text style={{ fontWeight: "bold", fontSize: 18 }}>Nhận xét</Text>
+        </View>
+        <Divider width={5} orientation="vertical" />
+
+        <ScrollView showsHorizontalScrollIndicator={false}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                marginTop: 10,
+              }}
+            >
+              <Image
+                source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
+                style={styles.story}
+              />
+
+              <View style={{ flexDirection: "row" }}>
+                <Text style={{ fontWeight: "500", marginRight: 10 }}>
+                  username
+                </Text>
+                <Text style={{ fontWeight: "300", color: "gray" }}>
+                  10 tháng
+                </Text>
+              </View>
+            </View>
+          </View>
+          <View
+            style={{
+              paddingLeft: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontWeight: "500",
+                fontSize: 16,
+                marginTop: 0,
+                marginLeft: 20,
+              }}
+            >
+              This is text comment abasjdbasjdbasjdbjsabdajsbdjasb
+            </Text>
+          </View>
+        </ScrollView>
+        <Divider width={1} orientation="vertical" />
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "flex-start",
+          }}
+        >
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginTop: 10,
+            }}
+          >
+            <Image
+              source={{ uri: "https://reactnative.dev/img/tiny_logo.png" }}
+              style={styles.story}
+            />
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity style={styles.btn1}>
+                <TextInput
+                  placeholder="Add comment"
+                  style={{
+                    ...FONTS.h3,
+                  }}
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+    </ModalPopUp>
   );
 };
 
@@ -199,6 +335,25 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 20,
     right: 10,
+  },
+  mediaImageContainer: {
+    width: 250,
+    height: 250,
+    borderRadius: 12,
+    overflow: "hidden",
+    marginHorizontal: 10,
+    marginBottom: 10,
+  },
+  image: {
+    flex: 1,
+    height: undefined,
+    width: undefined,
+  },
+  btn1: {
+    backgroundColor: "#d3d3d3",
+    borderRadius: 15,
+    padding: 8,
+    width: "90%",
   },
 });
 export default Detail;
