@@ -33,7 +33,7 @@ const Home = ({ navigation }) => {
   const [datasForHeader, setDatasForHeader] = useState([]);
   const scrollY = useRef(new Animated.Value(0)).current;
   const offSetAnim = useRef(new Animated.Value(0)).current;
-  const uid = useSelector(state => state.userReducer.userID); //lấy userId trên redux
+  const uid = useSelector((state) => state.userReducer.userID); //lấy userId trên redux
 
   const dispatch = useDispatch();
 
@@ -109,13 +109,13 @@ const Home = ({ navigation }) => {
   //get profile tại home rồi dispatch lên redux
   useEffect(() => {
     userService
-        .getProfile({ userID: uid })
-        .then((res) => {
-          dispatch(getCurrentUser(res));
-        })
-        .catch((err) => {
-          console.log("fail get profile")
-        });
+      .getProfile({ userID: uid })
+      .then((res) => {
+        dispatch(getCurrentUser(res));
+      })
+      .catch((err) => {
+        console.log("fail get profile");
+      });
   }, [uid]);
 
   var scrollEndTimer = null;
@@ -232,7 +232,12 @@ const Home = ({ navigation }) => {
           data={dataFromDB}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item, i }) => (
-            <Pin key={i.toString()} index={i} item={item} navigation={navigation}/>
+            <Pin
+              key={i.toString()}
+              index={i}
+              item={item}
+              navigation={navigation}
+            />
           )}
         />
       </Animated.View>
