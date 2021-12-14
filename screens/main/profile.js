@@ -12,7 +12,12 @@ import {
   Animated,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
-import { scrollDownHome } from "../../redux";
+import {
+  scrollDownHome,
+  showComment,
+  showLoading,
+  hideLoading,
+} from "../../redux";
 
 import { userService } from "../../services/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,6 +36,7 @@ const Profile = ({ navigation }) => {
   const [userPhotos, setUserPhotos] = useState([]); //array hình người đó đăng
   const [userVideos, setUserVideos] = useState([]); // array video người đó đăng
   const [mounted, setMounted] = useState(false);
+  const dispatch = useDispatch();
 
   const userCurrent = useSelector(userReducer);
   // console.log(userCurrent);
@@ -72,6 +78,8 @@ const Profile = ({ navigation }) => {
       userID: userCurrent.userID,
     };
 
+    dispatch(showLoading());
+
     //lấy thông tin người dùng
     userService
       .getProfile(payLoad)
@@ -97,8 +105,10 @@ const Profile = ({ navigation }) => {
         });
         setUserPhotos(resultPhoto.reverse());
         setUserVideos(resultVideo.reverse());
+        dispatch(hideLoading());
       })
       .catch((err) => {
+        dispatch(hideLoading());
         if (err === 400) setApiError("Not found any photo!!!");
         else setApiError(err.message);
       });
