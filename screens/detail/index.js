@@ -20,7 +20,13 @@ import {
   TextInput,
   TouchableWithoutFeedback,
 } from "react-native-gesture-handler";
-import { hideComment, showComment } from "../../redux";
+import {
+  hideComment,
+  showComment,
+  hideLoading,
+  showLoading,
+} from "../../redux";
+import { LinearGradient } from "expo-linear-gradient";
 
 let item;
 const userReducer = (state) => state.userReducer;
@@ -64,8 +70,8 @@ const Detail = ({ route, navigation }) => {
 
   return (
     <View>
-      <ModalComment allComment={allComment} />
-      <DetailImage />
+      <ModalComment allComment={allComment} setAllComment={setAllComment} />
+      <DetailImage navigation={navigation} />
       <Divider width={1} orientation="vertical" />
       <DetailHeader
         isLike={isLike}
@@ -76,7 +82,7 @@ const Detail = ({ route, navigation }) => {
   );
 };
 
-const DetailImage = () => (
+const DetailImage = (props) => (
   <View
     style={{
       width: "100%",
@@ -88,7 +94,26 @@ const DetailImage = () => (
       source={{ uri: `${item.link}` }}
       style={{ height: "100%", resizeMode: "cover" }}
     />
-    <TouchableOpacity style={styles.icon0}>
+    <TouchableOpacity
+      onPress={() => props.navigation.goBack()}
+      style={styles.icon0}
+    >
+      <LinearGradient
+        colors={["#000", "transparent"]}
+        start={{
+          x: 0.5,
+          y: 0,
+        }}
+        end={{
+          x: 0.5,
+          y: 1,
+        }}
+        style={{
+          height: 30,
+          width: "100%",
+          position: "absolute",
+        }}
+      />
       <AntDesign name="left" size={24} color="white" />
     </TouchableOpacity>
     <TouchableOpacity style={styles.icon4}>
@@ -212,12 +237,21 @@ const ModalComment = (props) => {
   const handlePostComment = async () => {
     if (!comment) return;
     else {
+      dispatch(showLoading());
+      let today = new Date();
+      let date =
+        today.getFullYear() +
+        "-" +
+        (today.getMonth() + 1) +
+        "-" +
+        today.getDate();
       let data = {
         userID: userProfile._id,
         postID: item._id,
         ownerName: userProfile.firstName + " " + userProfile.lastName,
         linkAvatar: userProfile.profilePhoto,
         content: comment,
+        createdAt: date,
       };
 
       await userService
@@ -229,7 +263,9 @@ const ModalComment = (props) => {
           console.log("ERR POST COMMENT: ", err);
         });
 
+      dispatch(hideLoading());
       textInput.clear();
+      props.setAllComment([...props.allComment, data]);
     }
   };
 
@@ -285,11 +321,19 @@ const ModalComment = (props) => {
                     />
 
                     <View style={{ flexDirection: "row" }}>
-                      <Text style={{ fontWeight: "500", marginRight: 10 }}>
+                      <Text
+                        style={{
+                          fontWeight: "500",
+                          marginRight: 10,
+                          fontWeight: "700",
+                        }}
+                      >
                         {item.ownerName}
                       </Text>
                       <Text style={{ fontWeight: "300", color: "gray" }}>
-                        {item.createdAt.slice(0, 10)}
+                        {item.createdAt != undefined
+                          ? item.createdAt.slice(0, 10)
+                          : ""}
                       </Text>
                     </View>
                   </View>
