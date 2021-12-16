@@ -65,6 +65,9 @@ const Home = ({ navigation }) => {
     extrapolate: "clamp",
   });
 
+  // Pin - opacity value
+  // const pinOpacity = scrollY.interpolate
+
   var _clampedScrollValue = 0;
   var _offsetValue = 0;
   var _scrollValue = 0;
@@ -236,6 +239,7 @@ const Home = ({ navigation }) => {
             <Pin
               key={i.toString()}
               index={i}
+              scrollY={scrollY}
               item={item}
               navigation={navigation}
             />
