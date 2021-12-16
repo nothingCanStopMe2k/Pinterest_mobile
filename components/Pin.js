@@ -17,6 +17,7 @@ const DURATION = 400;
 
 const Pin = (props) => {
   const { index, item, navigation, scrollY } = props;
+  const randomNumber = Math.random();
 
   return (
     <TouchableWithoutFeedback
@@ -31,8 +32,8 @@ const Pin = (props) => {
           style={{
             flex: 1,
             margin: 5,
-            marginBottom: 2,
-            height: Math.random() > 0.5 ? 200 : 200,
+            marginBottom: 24,
+            height: randomNumber <= 0.45 ? 200 : randomNumber < 0.9 ? 300 : 120,
           }}
         >
           <Image
@@ -112,6 +113,21 @@ const Pin = (props) => {
             ) : (
               <Text></Text>
             )}
+          </View>
+          <View
+            style={{
+              width: "100%",
+            }}
+          >
+            <Image
+              style={{
+                width: 20,
+                height: 20,
+                position: "absolute",
+                right: 5,
+              }}
+              source={icons.dots}
+            />
           </View>
         </View>
       </Animatable.View>
