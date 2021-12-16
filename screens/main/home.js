@@ -75,7 +75,7 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     fileService.getAllFile().then((res) => {
       setDataFromDB(res.slice(0, 20));
-      console.log(res.slice(0, 20));
+      // console.log(res.slice(0, 20));
     });
 
     adminService.getAllUser().then((res) => {
