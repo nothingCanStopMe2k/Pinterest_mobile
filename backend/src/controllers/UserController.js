@@ -175,4 +175,16 @@ export default {
         return res.status(error.code).json(error);
       });
   },
+  updateFavouriteTag: async (req, res, err) => {
+    const { itemTag, userID, flag } = req.body;
+
+    UserService.updateFavouriteTag(itemTag, userID, flag)
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch((error) => {
+        Log.error("updateFavTags", error.message, error);
+        return res.status(error.code).json(error);
+      });
+  },
 };

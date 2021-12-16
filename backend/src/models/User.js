@@ -23,6 +23,10 @@ export const UserSchema = new mongoose.Schema(
       enum: AppEnum.UserRole,
       default: AppEnum.UserRole.USER,
     },
+    favTags: {
+      type: Array,
+      defalut: [],
+    },
   },
   {
     timestamps: true,

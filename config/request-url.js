@@ -9,6 +9,7 @@ const getPhotos = "api/user/getPhotos";
 const postComment = "api/user/postComment";
 const registerWithGoogle = "api/user/registerWithGoogle";
 const getRecommend = "/api/user/getRecommend";
+const updateFavouriteTag = "api/user/updateFavouriteTag";
 
 const getFileById = "api/file/getFileById";
 const deleteFileById = "api/file/deleteFileById";
@@ -18,6 +19,7 @@ const getAllCommentById = "/api/file/getAllCommentById";
 const updateFileById = "/api/file/updateFileById";
 
 const getAllUser = "/api/admin/getAllUser";
+const getAllTags = "/api/admin/getAllTags";
 
 export const requestUrl = {
   auth,
@@ -38,4 +40,6 @@ export const requestUrl = {
   registerWithGoogle,
   getAllUser,
   getRecommend,
+  getAllTags,
+  updateFavouriteTag,
 };
