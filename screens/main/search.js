@@ -23,10 +23,10 @@ import { SearchItem, Tag } from "../../components/SearchItem";
 // import { useSelector } from "react-redux";
 
 const Search = ({ navigation }) => {
-  // const [dataRecommend, setDataRecommend] = useState([]);
   // const user = useSelector((state) => state.userReducer.user);
   // console.log(user);
   const [dataFile, setDataFile] = useState([]);
+  const [recommendKeyword, setRecommendKeyword] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isFocus, setFocus] = useState(false);
   const search_recommend_translate_y = useRef(
@@ -95,6 +95,15 @@ const Search = ({ navigation }) => {
     };
     Animated.timing(search_recommend_translate_y, translateAnimConfig).start();
   };
+
+  const handleChangeText = (value) => {
+    setKeyword(value);
+    const temp = recommendObject.favTags.filter((tag) => {
+      return !tag.indexOf(value.toLowerCase());
+    });
+    setRecommendKeyword(temp);
+    console.log(temp);
+  };
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -120,10 +129,7 @@ const Search = ({ navigation }) => {
             clearButtonMode="always"
             value={keyword}
             onFocus={handleFocus}
-            onChangeText={(value) => {
-              setKeyword(value);
-            }}
-            // onBlur={handleBlur}
+            onChangeText={handleChangeText}
             style={styles.input}
             blurOnSubmit={false}
           />
@@ -192,13 +198,15 @@ const Search = ({ navigation }) => {
       >
         <View style={styles.seperator}></View>
         {keyword.trim() ? (
-          <SearchItem keyword="quoc bao" />
+          recommendKeyword.map((key, index) => (
+            <SearchItem key={index} keyword={key} />
+          ))
         ) : historySearch.length > 0 ? (
           <View>
             <Text style={styles.recentTitle}>Tìm kiếm gần đây</Text>
             {historySearch.map((key, index) => (
-              <View>
-                <SearchItem key={index} keyword={key} />
+              <View key={index}>
+                <SearchItem keyword={key} />
               </View>
             ))}
           </View>
