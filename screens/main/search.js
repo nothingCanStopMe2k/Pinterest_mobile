@@ -62,7 +62,7 @@ const Search = ({ navigation }) => {
     Promise.all(promiseArr)
       .then((data) => {
         // console.log(data);
-        setDataFile(data);
+        if (data) setDataFile(data.flat());
       })
       .catch((err) => {
         console.log(err);
@@ -99,12 +99,44 @@ const Search = ({ navigation }) => {
         )}
       </View>
       <View style={styles.tag__container}>
-        <Text style={styles.recommendText}>Gợi ý cho bạn</Text>
+        <Text style={styles.recommendText}>Tags</Text>
         <ScrollView style={styles.tags__scroll} horizontal={true}>
           {recommendObject.favTags.map((item, index) => (
             <Tag key={index} tagName={item} onPress={() => setKeyword(item)} />
           ))}
         </ScrollView>
+      </View>
+      <View style={styles.favorite}>
+        <Text style={styles.favorite__title}>Yêu thích</Text>
+        <Animated.View style={{ flexGrow: 2.5 }}>
+          <Marsonry
+            style={{ alignSelf: "stretch" }}
+            contentContainerStyle={{
+              // padding: 10,
+              alignSelf: "stretch",
+            }}
+            // innerRef={scrollRef}
+            // onScroll={Animated.event(
+            //   [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            //   { useNativeDriver: true }
+            // )}
+            // onMomentumScrollBegin={onMomentumScrollBegin}
+            // onMomentumScrollEnd={onMomentumScrollEnd}
+            // onScrollEndDrag={onScrollEndDrag}
+            numColumns={2}
+            data={dataFile}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, i }) => (
+              <Pin
+                key={i.toString()}
+                index={i}
+                // scrollY={scrollY}
+                item={item}
+                navigation={navigation}
+              />
+            )}
+          />
+        </Animated.View>
       </View>
     </View>
   );
@@ -114,8 +146,9 @@ export default Search;
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    padding: 10,
     paddingTop: 10,
+    flex: 1,
   },
   searchBar: {
     display: "flex",
@@ -147,7 +180,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   recommendText: {
-    fontWeight: "bold",
+    fontWeight: "500",
   },
   tags__scroll: {
     marginLeft: 7,
@@ -161,5 +194,13 @@ const styles = StyleSheet.create({
   },
   tag: {
     color: "white",
+  },
+  favorite: {
+    marginTop: 20,
+    flex: 1,
+  },
+  favorite__title: {
+    fontWeight: "bold",
+    fontSize: 18,
   },
 });
