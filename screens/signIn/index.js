@@ -68,6 +68,7 @@ const signIn = ({ navigation }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       // Nếu người dùng đăng nhập bằng tài khoản google.
       if (user) {
+        // console.log(user);
         navigation.navigate("main");
         dispatch(addCurrentUser("GOOGLE", user.email));
       }

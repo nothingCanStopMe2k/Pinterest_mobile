@@ -8,29 +8,30 @@ import {
   Platform,
   ScrollView,
   Keyboard,
+  Animated,
+  Easing,
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Marsonry from "../../components/Marsonry";
 import { fileService } from "../../services/file.service";
 import { userService } from "../../services/user.service";
 import Pin from "../../components/Pin";
-import Animated from "react-native-reanimated";
-
-const Tag = ({ tagName, onPress }) => {
-  return (
-    <View>
-      <TouchableOpacity style={styles.tag__wrapper} onPress={onPress}>
-        <Text style={styles.tag}>{tagName}</Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+// import Animated from "react-native-reanimated";
+import { SIZES, COLORS } from "../../constants";
+import { DefaultTheme } from "@react-navigation/native";
+import { SearchItem, Tag } from "../../components/SearchItem";
+// import { useSelector } from "react-redux";
 
 const Search = ({ navigation }) => {
   // const [dataRecommend, setDataRecommend] = useState([]);
+  // const user = useSelector((state) => state.userReducer.user);
+  // console.log(user);
   const [dataFile, setDataFile] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isFocus, setFocus] = useState(false);
+  const search_recommend_translate_y = useRef(
+    new Animated.Value(SIZES.height)
+  ).current;
   const refs = useRef();
   const recommendObject = {
     // lấy thông tin User đang đăng nhập gắn vào đây đây, do chưa có dữ liệu favTags nên lấy gtri mặc định
@@ -45,7 +46,7 @@ const Search = ({ navigation }) => {
       "dragon",
     ],
   };
-
+  const historySearch = ["girl beautiful", "husky", "dragon"];
   useEffect(() => {
     // console.log(refs);
     userService
@@ -60,7 +61,7 @@ const Search = ({ navigation }) => {
         // console.log("DATA RECOMMEND: ", res);
       })
       .then((data) => {
-        console.log(data);
+        // console.log(data);
         if (data) setDataFile(data.flat());
       })
       .catch((err) => {
@@ -74,13 +75,25 @@ const Search = ({ navigation }) => {
 
   const handleFocus = () => {
     setFocus(true);
-    console.log("focused");
+    const translateAnimConfig = {
+      toValue: 100,
+      duration: 100,
+      useNativeDriver: true,
+      easing: Easing.inOut(Easing.ease),
+    };
+    Animated.timing(search_recommend_translate_y, translateAnimConfig).start();
   };
 
   const handleBackInput = () => {
     Keyboard.dismiss();
     setFocus(false);
     setKeyword("");
+    const translateAnimConfig = {
+      toValue: SIZES.height,
+      duration: 100,
+      useNativeDriver: true,
+    };
+    Animated.timing(search_recommend_translate_y, translateAnimConfig).start();
   };
   return (
     <View style={styles.container}>
@@ -95,10 +108,12 @@ const Search = ({ navigation }) => {
           </TouchableOpacity>
         )}
         <View style={styles.searchBar}>
-          <Image
-            source={require("./assets/search.png")}
-            style={styles.searchIcon}
-          />
+          {!isFocus && (
+            <Image
+              source={require("../../assets/icons/search2.png")}
+              style={styles.searchIcon}
+            />
+          )}
           <TextInput
             ref={refs}
             placeholder="Tìm kiếm"
@@ -169,6 +184,31 @@ const Search = ({ navigation }) => {
           />
         </Animated.View>
       </View>
+      <Animated.View
+        style={[
+          styles.searchRecommend,
+          { transform: [{ translateY: search_recommend_translate_y }] },
+        ]}
+      >
+        <View style={styles.seperator}></View>
+        {keyword.trim() ? (
+          <SearchItem keyword="quoc bao" />
+        ) : historySearch.length > 0 ? (
+          <View>
+            <Text style={styles.recentTitle}>Tìm kiếm gần đây</Text>
+            {historySearch.map((key, index) => (
+              <View>
+                <SearchItem key={index} keyword={key} />
+              </View>
+            ))}
+          </View>
+        ) : (
+          <Image
+            style={styles.searchIllustration}
+            source={require("../../assets/icons/SearchIllustration.png")}
+          />
+        )}
+      </Animated.View>
     </View>
   );
 };
@@ -200,6 +240,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    marginLeft: 7,
   },
   searchIcon: {
     width: 16,
@@ -225,16 +266,6 @@ const styles = StyleSheet.create({
   tags__scroll: {
     marginLeft: 7,
   },
-  tag__wrapper: {
-    paddingVertical: 3,
-    paddingHorizontal: 8,
-    backgroundColor: "#000",
-    marginHorizontal: 3,
-    borderRadius: 20,
-  },
-  tag: {
-    color: "white",
-  },
   favorite: {
     marginTop: 20,
     flex: 1,
@@ -244,5 +275,27 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingHorizontal: 10,
     marginBottom: 5,
+  },
+  searchRecommend: {
+    width: SIZES.width,
+    height: SIZES.height,
+    position: "absolute",
+    backgroundColor: DefaultTheme.colors.background,
+  },
+  seperator: {
+    height: 1.5,
+    backgroundColor: "#CCC",
+  },
+  searchIllustration: {
+    width: 300,
+    height: 300,
+    alignSelf: "center",
+    marginTop: 150,
+  },
+  recentTitle: {
+    fontWeight: "bold",
+    fontSize: 18,
+    marginTop: 5,
+    paddingHorizontal: 15,
   },
 });
