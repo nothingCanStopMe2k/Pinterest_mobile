@@ -15,6 +15,9 @@ const postComment = (data) => requestService.post(requestUrl.postComment, data);
 const getRecommend = (data) =>
   requestService.get(requestUrl.getRecommend, data);
 
+const updateFavouriteTag = (data) =>
+  requestService.post(requestUrl.updateFavouriteTag, data);
+
 export const userService = {
   getProfile,
   post, //Post khi user post ảnh mới lên
@@ -22,4 +25,5 @@ export const userService = {
   postWithTicket,
   postComment,
   getRecommend,
+  updateFavouriteTag,
 };

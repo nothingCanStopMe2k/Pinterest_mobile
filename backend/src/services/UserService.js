@@ -311,4 +311,21 @@ export default {
       email,
     });
   },
+  updateFavouriteTag: async (itemTag, userID) => {
+    let user = await User.findOne({ _id: userID });
+    let favTagsUpdate = user.favTags;
+    for (var i of itemTag) {
+      if (!favTagsUpdate.includes(i)) favTagsUpdate.push(i);
+    }
+    return await User.findByIdAndUpdate(
+      { _id: userID },
+      { favTags: favTagsUpdate }
+    )
+      .then((res) => {
+        return res;
+      })
+      .catch((err) => {
+        return Promise.reject(new ServiceError(500, err.message, err));
+      });
+  },
 };

@@ -9,6 +9,7 @@ const getPhotos = "api/user/getPhotos";
 const postComment = "api/user/postComment";
 const registerWithGoogle = "api/user/registerWithGoogle";
 const getRecommend = "/api/user/getRecommend";
+const updateFavouriteTag = "api/user/updateFavouriteTag";
 
 const getFileById = "api/file/getFileById";
 const deleteFileById = "api/file/deleteFileById";
@@ -40,4 +41,5 @@ export const requestUrl = {
   getAllUser,
   getRecommend,
   getAllTags,
+  updateFavouriteTag,
 };

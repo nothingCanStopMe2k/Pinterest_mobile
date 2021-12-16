@@ -28,7 +28,7 @@ import {
 } from "../../redux";
 import { LinearGradient } from "expo-linear-gradient";
 
-let item;
+let item, userCurrent;
 const userReducer = (state) => state.userReducer;
 
 const Detail = ({ route, navigation }) => {
@@ -36,6 +36,7 @@ const Detail = ({ route, navigation }) => {
   const [numberLike, setNumberLike] = useState(0);
   const [isLike, setIsLike] = useState(false);
   const [allComment, setAllComment] = useState([]);
+  userCurrent = useSelector(userReducer);
 
   useEffect(() => {
     setNumberLike(item.count);
@@ -65,6 +66,20 @@ const Detail = ({ route, navigation }) => {
       })
       .catch((err) => {
         console.log("Something Wrong: ", err);
+      });
+
+    // Xu ly favTags cho nguoi dung:
+    let payLoad = {
+      itemTag: item.tag,
+      userID: userCurrent.user._id,
+    };
+    await userService
+      .updateFavouriteTag(payLoad)
+      .then((res) => {
+        // console.log("RES: ", res.favTags);
+      })
+      .catch((err) => {
+        console.log("ERR UPDATE FAVTAGS: ", err.message);
       });
   };
 
@@ -212,7 +227,6 @@ const ModalComment = (props) => {
   const visibleProp = (state) => state.commentReducer.visible;
   const dispatch = useDispatch();
   const visible = useSelector(visibleProp);
-  const userCurrent = useSelector(userReducer);
   let commentArray = props.allComment;
   const [userProfile, setUserProfile] = useState({}); //thông tin người dùng
   const [comment, setComment] = useState();
