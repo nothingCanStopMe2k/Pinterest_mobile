@@ -72,11 +72,13 @@ const Detail = ({ route, navigation }) => {
     let payLoad = {
       itemTag: item.tag,
       userID: userCurrent.user._id,
+      flag: isLike,
     };
+
     await userService
       .updateFavouriteTag(payLoad)
       .then((res) => {
-        // console.log("RES: ", res.favTags);
+        console.log("RES: OK UPDATE FAVTAGS SUCCESS");
       })
       .catch((err) => {
         console.log("ERR UPDATE FAVTAGS: ", err.message);

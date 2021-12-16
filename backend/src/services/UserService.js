@@ -311,11 +311,19 @@ export default {
       email,
     });
   },
-  updateFavouriteTag: async (itemTag, userID) => {
+  updateFavouriteTag: async (itemTag, userID, flag) => {
     let user = await User.findOne({ _id: userID });
     let favTagsUpdate = user.favTags;
-    for (var i of itemTag) {
-      if (!favTagsUpdate.includes(i)) favTagsUpdate.push(i);
+    if (!flag) {
+      for (var i of itemTag) {
+        if (!favTagsUpdate.includes(i)) favTagsUpdate.push(i);
+      }
+    } else {
+      for (var i of itemTag)
+        favTagsUpdate = favTagsUpdate.filter((item) => {
+          if (item == i) return false;
+          return true;
+        });
     }
     return await User.findByIdAndUpdate(
       { _id: userID },

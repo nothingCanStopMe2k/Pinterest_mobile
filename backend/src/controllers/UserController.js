@@ -176,9 +176,9 @@ export default {
       });
   },
   updateFavouriteTag: async (req, res, err) => {
-    const { itemTag, userID } = req.body;
+    const { itemTag, userID, flag } = req.body;
 
-    UserService.updateFavouriteTag(itemTag, userID)
+    UserService.updateFavouriteTag(itemTag, userID, flag)
       .then((result) => {
         return res.status(200).json(result);
       })
