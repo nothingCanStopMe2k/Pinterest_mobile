@@ -15,6 +15,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 import Marsonry from "../../components/Marsonry";
 import { fileService } from "../../services/file.service";
 import { userService } from "../../services/user.service";
+import { adminService } from "../../services/admin.service";
 import Pin from "../../components/Pin";
 // import Animated from "react-native-reanimated";
 import { SIZES, COLORS } from "../../constants";
@@ -27,6 +28,7 @@ const Search = ({ navigation }) => {
   // console.log(user);
   const [dataFile, setDataFile] = useState([]);
   const [recommendKeyword, setRecommendKeyword] = useState([]);
+  const [allTags, setAllTags] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isFocus, setFocus] = useState(false);
   const search_recommend_translate_y = useRef(
@@ -49,6 +51,12 @@ const Search = ({ navigation }) => {
   const historySearch = ["girl beautiful", "husky", "dragon"];
   useEffect(() => {
     // console.log(refs);
+    adminService
+      .getAllTags()
+      .then((tags) => {
+        setAllTags(tags);
+      })
+      .catch((err) => console.log(err));
     userService
       .getRecommend(recommendObject)
       .then((res) => {
@@ -98,11 +106,11 @@ const Search = ({ navigation }) => {
 
   const handleChangeText = (value) => {
     setKeyword(value);
-    const temp = recommendObject.favTags.filter((tag) => {
+    const temp = allTags.filter((tag) => {
       return !tag.indexOf(value.toLowerCase());
     });
-    setRecommendKeyword(temp);
-    console.log(temp);
+    setRecommendKeyword(temp.slice(0, 10));
+    // console.log(temp);
   };
   return (
     <View style={styles.container}>
@@ -198,9 +206,11 @@ const Search = ({ navigation }) => {
       >
         <View style={styles.seperator}></View>
         {keyword.trim() ? (
-          recommendKeyword.map((key, index) => (
-            <SearchItem key={index} keyword={key} />
-          ))
+          <ScrollView>
+            {recommendKeyword.map((key, index) => (
+              <SearchItem key={index} keyword={key} />
+            ))}
+          </ScrollView>
         ) : historySearch.length > 0 ? (
           <View>
             <Text style={styles.recentTitle}>Tìm kiếm gần đây</Text>
