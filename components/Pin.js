@@ -32,7 +32,7 @@ const Pin = (props) => {
           style={{
             flex: 1,
             margin: 5,
-            marginBottom: 24,
+            marginBottom: 30,
             height: randomNumber <= 0.45 ? 200 : randomNumber < 0.9 ? 300 : 120,
           }}
         >
@@ -51,37 +51,6 @@ const Pin = (props) => {
               width: "100%",
             }}
           >
-            <View
-              style={{
-                marginBottom: -10,
-                marginTop: 5,
-                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                // opacity: 0.5,
-                padding: 5,
-                borderRadius: 10,
-                flexDirection: "row",
-                marginLeft: 10,
-                width: 65,
-              }}
-            >
-              <Image
-                source={icons.heartFill}
-                style={{
-                  width: 24,
-                  height: 24,
-                }}
-              />
-              <Text
-                style={{
-                  ...FONTS.h3,
-                  color: COLORS.black,
-                  marginLeft: 3,
-                  fontWeight: "600",
-                }}
-              >
-                {item.count}
-              </Text>
-            </View>
             {item.status ? (
               <LinearGradient
                 colors={["transparent", "#000"]}
@@ -120,6 +89,34 @@ const Pin = (props) => {
               width: "100%",
             }}
           >
+            <View
+              style={{
+                padding: 5,
+                borderRadius: 10,
+                flexDirection: "row",
+                marginLeft: 10,
+                width: 65,
+              }}
+            >
+              <Image
+                source={icons.heartFill}
+                style={{
+                  width: 20,
+                  height: 20,
+                }}
+              />
+              <Text
+                style={{
+                  ...FONTS.h3,
+                  color: COLORS.black,
+                  marginLeft: 3,
+                  fontWeight: "600",
+                  fontSize: 15,
+                }}
+              >
+                {item.count}
+              </Text>
+            </View>
             <Image
               style={{
                 width: 20,
