@@ -71,6 +71,7 @@ const signUp = ({ navigation }) => {
 
   const handleSignUp = () => {
     setVisiblePop(false);
+    navigation.navigate("register")
   };
 
   const onSubmit = async (data) => {
