@@ -12,11 +12,12 @@ import {
   Animated,
   MaskedViewBase,
   ScrollView,
+  RefreshControl,
 } from "react-native";
 
 import { auth } from "../../services/firebase/configure";
 import { fileService } from "../../services/file.service";
-import { scrollDownHome } from "../../redux";
+import { hideLoading, scrollDownHome, showLoading } from "../../redux";
 import Marsonry from "../../components/Marsonry";
 
 import Pin from "../../components/Pin";
@@ -31,6 +32,7 @@ const containerHeight = 90;
 const Home = ({ navigation }) => {
   const [dataFromDB, setDataFromDB] = useState([]);
   const [datasForHeader, setDatasForHeader] = useState([]);
+  const [refreshing, setRefresing] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
   const offSetAnim = useRef(new Animated.Value(0)).current;
   const uid = useSelector((state) => state.userReducer.userID); //lấy userId trên redux
@@ -142,6 +144,15 @@ const Home = ({ navigation }) => {
   const onScrollEndDrag = () => {
     scrollEndTimer = setTimeout(onMomentumScrollEnd, 250);
   };
+  const onRefresh = async () => {
+    dispatch(showLoading());
+    setRefresing(true);
+    await fileService.getAllFile().then((res) => {
+      setDataFromDB(res.reverse().slice(0, 20));
+      dispatch(hideLoading());
+    });
+    setRefresing(false);
+  };
 
   const handleSignOut = () => {
     auth
@@ -229,6 +240,8 @@ const Home = ({ navigation }) => {
             [{ nativeEvent: { contentOffset: { y: scrollY } } }],
             { useNativeDriver: true }
           )}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
           onMomentumScrollBegin={onMomentumScrollBegin}
           onMomentumScrollEnd={onMomentumScrollEnd}
           onScrollEndDrag={onScrollEndDrag}
