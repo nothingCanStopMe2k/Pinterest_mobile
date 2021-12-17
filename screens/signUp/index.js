@@ -69,6 +69,10 @@ const signUp = ({ navigation }) => {
     }
   };
 
+  const handleSignUp = () => {
+    setVisiblePop(false);
+  };
+
   const onSubmit = async (data) => {
     if (isValidUser && isValidPassword) {
       return;
@@ -82,7 +86,7 @@ const signUp = ({ navigation }) => {
           user.saveUserStorage(res.token);
           dispatch(hideLoading());
           dispatch(addCurrentUser(res.token.accessToken, res.token.user));
-          navigation.navigate("main")
+          navigation.navigate("main");
         })
         .catch((err) => {
           dispatch(hideLoading());
@@ -128,8 +132,9 @@ const signUp = ({ navigation }) => {
             color: COLORS.danger,
           }}
         >
-          Opps, Email hoặc password bạn nhập không chính xác. Vui lòng thử lại
+          Opps, Email hoặc password bạn nhập không chính xác. Đăng ký luôn nhé?
         </Text>
+        <Button title="OK" color={COLORS.blue} onPress={handleSignUp} />
       </ModalPopUp>
       <ModalPopUp visible={visiblePopForgotPass}>
         <View style={{ alignItems: "center" }}>
