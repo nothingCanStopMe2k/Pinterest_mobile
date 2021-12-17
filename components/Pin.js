@@ -102,6 +102,7 @@ const Pin = (props) => {
                 }}
               >
                 <Text
+                  numberOfLines={1}
                   style={{
                     ...FONTS.h4,
                     color: "#fff",
