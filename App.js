@@ -1,7 +1,7 @@
 import { StatusBar } from "expo-status-bar";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { signIn, signUp, splash, detail } from "./screens";
+import { signIn, signUp, splash, detail, register } from "./screens";
 import Main from "./screens/main";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
@@ -37,6 +37,7 @@ export default function App() {
           <Stack.Screen name="signIn" component={signIn} />
           <Stack.Screen name="main" component={Main} />
           <Stack.Screen name="detail" component={detail} />
+          <Stack.Screen name="register" component={register} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>
