@@ -28,6 +28,7 @@ import { getCurrentUser } from "../../redux/user/userAction";
 
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
+let index = 1;
 
 const Home = ({ navigation }) => {
   const [dataFromDB, setDataFromDB] = useState([]);
@@ -76,7 +77,7 @@ const Home = ({ navigation }) => {
 
   useEffect(() => {
     fileService.getAllFile().then((res) => {
-      setDataFromDB(res.reverse().slice(0, 20));
+      setDataFromDB(res.reverse().slice(0, 15));
       // console.log(res.slice(0, 20));
     });
 
@@ -128,7 +129,7 @@ const Home = ({ navigation }) => {
   const onMomentumScrollBegin = () => {
     clearTimeout(scrollEndTimer);
   };
-  const onMomentumScrollEnd = () => {
+  const onMomentumScrollEnd = async (e) => {
     const toValue =
       _scrollValue > containerHeight &&
       _clampedScrollValue > containerHeight / 2
@@ -140,6 +141,26 @@ const Home = ({ navigation }) => {
       duration: 500,
       useNativeDriver: true,
     }).start();
+
+    // Handle infinity scroll
+    if (e) {
+      const scrollPosition = e.nativeEvent.contentOffset.y;
+      const scrollViewHeight = e.nativeEvent.layoutMeasurement.height;
+      const contentHeight = e.nativeEvent.contentSize.height;
+      const isScrollToBottom = scrollViewHeight + scrollPosition;
+
+      if (isScrollToBottom >= contentHeight - 50) {
+        dispatch(showLoading());
+        await fileService.getAllFile().then((res) => {
+          const newData = res
+            .reverse()
+            .slice(15 * index + 1, 15 * (index * 2) + 1);
+          setDataFromDB([...dataFromDB, ...newData]);
+          index = index + 1;
+        });
+        dispatch(hideLoading());
+      }
+    }
   };
   const onScrollEndDrag = () => {
     scrollEndTimer = setTimeout(onMomentumScrollEnd, 250);
