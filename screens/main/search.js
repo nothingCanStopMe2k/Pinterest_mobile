@@ -17,38 +17,34 @@ import { fileService } from "../../services/file.service";
 import { userService } from "../../services/user.service";
 import { adminService } from "../../services/admin.service";
 import Pin from "../../components/Pin";
-// import Animated from "react-native-reanimated";
 import { SIZES, COLORS } from "../../constants";
 import { DefaultTheme } from "@react-navigation/native";
 import { SearchItem, Tag } from "../../components/SearchItem";
-// import { useSelector } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useSelector } from "react-redux";
 
 const Search = ({ navigation }) => {
-  // const user = useSelector((state) => state.userReducer.user);
+  const user = useSelector((state) => state.userReducer.user);
   // console.log(user);
   const [dataFile, setDataFile] = useState([]);
   const [recommendKeyword, setRecommendKeyword] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [keyword, setKeyword] = useState("");
+  const [historySearch, setHistorySearch] = useState([]);
+  const [keyword, setKeyword] = useState({ key: "", isShow: false });
   const [isFocus, setFocus] = useState(false);
+  const [isShowResult, setShowResult] = useState(false);
   const search_recommend_translate_y = useRef(
     new Animated.Value(SIZES.height)
   ).current;
+  // const search_result_translate_y = useRef(
+  //   new Animated.Value(SIZES.height)
+  // ).current;
   const refs = useRef();
   const recommendObject = {
     // lấy thông tin User đang đăng nhập gắn vào đây đây, do chưa có dữ liệu favTags nên lấy gtri mặc định
-    id: "id",
-    favTags: [
-      "animes",
-      "girl beautiful",
-      "husky",
-      "blue",
-      "joker",
-      "cat",
-      "dragon",
-    ],
+    id: user._id,
+    favTags: [...user.favTags],
   };
-  const historySearch = ["girl beautiful", "husky", "dragon"];
   useEffect(() => {
     // console.log(refs);
     adminService
@@ -75,10 +71,25 @@ const Search = ({ navigation }) => {
       .catch((err) => {
         console.log("ERR getRecommend: ", err);
       });
+    AsyncStorage.getItem("History_Search")
+      .then((data) => {
+        if (data) setHistorySearch(JSON.parse(data));
+      })
+      .catch((err) => console.log(err));
   }, []);
 
+  useEffect(() => {
+    AsyncStorage.getItem(JSON.stringify(historySearch));
+    if (!historySearch.length) setShowResult(false);
+  }, [historySearch]);
+
+  useEffect(() => {
+    handleChangeRecommendKeyword(keyword.key);
+  }, [keyword]);
+
+  //===================== Event Handler =====================//
   const handleClearPress = () => {
-    setKeyword("");
+    setKeyword({ key: "", isShow: false });
   };
 
   const handleFocus = () => {
@@ -95,23 +106,49 @@ const Search = ({ navigation }) => {
   const handleBackInput = () => {
     Keyboard.dismiss();
     setFocus(false);
-    setKeyword("");
+    setKeyword({ key: "", isShow: false });
     const translateAnimConfig = {
       toValue: SIZES.height,
       duration: 100,
       useNativeDriver: true,
+      easing: Easing.inOut(Easing.ease),
     };
     Animated.timing(search_recommend_translate_y, translateAnimConfig).start();
   };
 
-  const handleChangeText = (value) => {
-    setKeyword(value);
+  const handleChangeRecommendKeyword = (value) => {
     const temp = allTags.filter((tag) => {
-      return !tag.indexOf(value.toLowerCase());
+      return !tag.indexOf(value.trim().toLowerCase());
     });
     setRecommendKeyword(temp.slice(0, 10));
-    // console.log(temp);
+    setShowResult(keyword.isShow);
   };
+
+  const handleChangeText = (value) => {
+    setKeyword({ key: value, isShow: false });
+    // console.log(temp);
+    // handleChangeRecommendKeyword(value);
+  };
+
+  const handlePressItem = (type) => {
+    return (item) => {
+      // alert(item);
+      if (!type && !historySearch.includes(item))
+        setHistorySearch([...historySearch, item]);
+      setShowResult(true);
+      setKeyword({ key: item, isShow: true });
+      Keyboard.dismiss();
+    };
+  };
+
+  const handleDeleteItem = (index) => {
+    alert("Delete " + historySearch[index]);
+    setHistorySearch([
+      ...historySearch.slice(0, index),
+      ...historySearch.slice(index + 1, historySearch.length),
+    ]);
+  };
+  //===================== Event Handler =====================//
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -121,7 +158,7 @@ const Search = ({ navigation }) => {
             onPress={handleBackInput}
             style={styles.blurIcon}
           >
-            <Image source={require("./assets/arrow.png")} />
+            <Image source={require("../../assets/images/arrow.png")} />
           </TouchableOpacity>
         )}
         <View style={styles.searchBar}>
@@ -135,13 +172,13 @@ const Search = ({ navigation }) => {
             ref={refs}
             placeholder="Tìm kiếm"
             clearButtonMode="always"
-            value={keyword}
+            value={keyword.key}
             onFocus={handleFocus}
             onChangeText={handleChangeText}
             style={styles.input}
             blurOnSubmit={false}
           />
-          {keyword !== "" && Platform.OS === "android" && (
+          {keyword.key !== "" && Platform.OS === "android" && (
             <TouchableOpacity activeOpacity="0.7" onPress={handleClearPress}>
               <Image
                 source={require("./assets/close.png")}
@@ -159,7 +196,7 @@ const Search = ({ navigation }) => {
               key={index}
               tagName={item}
               onPress={() => {
-                setKeyword(item);
+                setKeyword({ key: item, isShow: false });
                 refs.current.focus();
               }}
             />
@@ -172,7 +209,6 @@ const Search = ({ navigation }) => {
           <Marsonry
             style={{ alignSelf: "stretch" }}
             contentContainerStyle={{
-              // padding: 10,
               alignSelf: "stretch",
             }}
             // innerRef={scrollRef}
@@ -205,19 +241,41 @@ const Search = ({ navigation }) => {
         ]}
       >
         <View style={styles.seperator}></View>
-        {keyword.trim() ? (
+        {isShowResult ? (
+          <View>
+            <Text>Ket qua tim kiem</Text>
+          </View>
+        ) : keyword.key.trim() ? (
           <ScrollView>
-            {recommendKeyword.map((key, index) => (
-              <SearchItem key={index} keyword={key} />
-            ))}
+            {recommendKeyword.length > 0 ? (
+              recommendKeyword.map((key, index) => (
+                <SearchItem
+                  key={index}
+                  keyword={key}
+                  onPress={handlePressItem(0)}
+                />
+              ))
+            ) : (
+              <View style={styles.NoResultContainer}>
+                <Image source={require("../../assets/icons/magnify.png")} />
+                <Text style={styles.NoResultText}>
+                  Không tìm thấy kết quả cho {keyword.key}
+                </Text>
+              </View>
+            )}
           </ScrollView>
         ) : historySearch.length > 0 ? (
           <View>
             <Text style={styles.recentTitle}>Tìm kiếm gần đây</Text>
             {historySearch.map((key, index) => (
-              <View key={index}>
-                <SearchItem keyword={key} />
-              </View>
+              <SearchItem
+                key={index}
+                index={index}
+                keyword={key}
+                onPress={handlePressItem(1)}
+                onDelete={handleDeleteItem}
+                deleteAction
+              />
             ))}
           </View>
         ) : (
@@ -315,5 +373,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 5,
     paddingHorizontal: 15,
+  },
+  NoResultContainer: {
+    alignItems: "center",
+    marginTop: 150,
+  },
+  NoResultText: {
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
