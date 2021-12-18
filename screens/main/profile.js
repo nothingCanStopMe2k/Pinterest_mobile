@@ -10,6 +10,7 @@ import {
   ScrollView,
   FlatList,
   Animated,
+  Platform,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import {
@@ -21,10 +22,12 @@ import {
 import { userService } from "../../services/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { user } from "./../../util/user";
-import { FONTS } from "../../constants";
+import { FONTS, SIZES } from "../../constants";
 import { auth } from "../../services/firebase/configure";
 import AppButton from "../../components/AppButton";
-// import BottomSheet from "";
+import BottomSheet from "../../components/BottomSheet";
+import { TouchableHighlight } from "react-native-gesture-handler";
+import * as ImagePicker from "expo-image-picker";
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
 const userReducer = (state) => state.userReducer;
@@ -35,8 +38,8 @@ const Profile = ({ navigation }) => {
   const [userPhotos, setUserPhotos] = useState([]); //array hình người đó đăng
   const [userVideos, setUserVideos] = useState([]); // array video người đó đăng
   const [mounted, setMounted] = useState(false);
+  const [image, setImage] = useState(null);
   const dispatch = useDispatch();
-
   const userCurrent = useSelector(userReducer);
   // console.log(userCurrent);
 
@@ -129,6 +132,41 @@ const Profile = ({ navigation }) => {
     // );
   }, []);
 
+  // Xin quyền truy cập storage của thiết bị
+  useEffect(() => {
+    const requestPermision = async () => {
+      if (Platform.OS !== "web") {
+        const { status } =
+          await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status !== "granted") {
+          alert("Không cho phép truy cập");
+        }
+      }
+    };
+    requestPermision();
+  }, []);
+  // Chọn ảnh từ thiết bị
+  const pickImage = async () => {
+    let res = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [10, 16],
+      quality: 1,
+    });
+    console.log(res);
+    if (!res.cancelled) setImage(res.uri);
+  };
+  //Chụp ảnh
+  const captureImage = async () => {
+    let res = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [10, 16],
+      quality: 1,
+    });
+    console.log(res);
+    if (!res.cancelled) setImage(res.uri);
+  };
   const logout = () => {
     if (userCurrent.accessToken == "GOOGLE") {
       auth
@@ -286,6 +324,25 @@ const Profile = ({ navigation }) => {
           </View>
         </View>
       </Animated.ScrollView>
+      <BottomSheet height={SIZES.height / 3}>
+        <View>
+          <Text style={styles.BottomSheet__header}>Đăng ảnh</Text>
+          <TouchableHighlight
+            style={styles.UploadAction}
+            onPress={() => captureImage()}
+            underlayColor={"#888"}
+          >
+            <Text style={styles.UploadAction__text}>Chụp ảnh</Text>
+          </TouchableHighlight>
+          <TouchableHighlight
+            style={styles.UploadAction}
+            onPress={() => pickImage()}
+            underlayColor={"#888"}
+          >
+            <Text style={styles.UploadAction__text}>Tải ảnh từ thiết bị</Text>
+          </TouchableHighlight>
+        </View>
+      </BottomSheet>
     </SafeAreaView>
   );
 };
@@ -391,5 +448,24 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     marginTop: 3,
     marginRight: 20,
+  },
+  BottomSheet__header: {
+    fontWeight: "bold",
+    fontSize: 22,
+    textAlign: "center",
+    marginBottom: 30,
+  },
+  UploadAction: {
+    paddingVertical: 10,
+    width: SIZES.width * 0.85,
+    marginBottom: 15,
+    borderRadius: 20,
+    backgroundColor: "#293744",
+  },
+  UploadAction__text: {
+    fontSize: 16,
+    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
   },
 });
