@@ -162,7 +162,7 @@ const Profile = ({ navigation }) => {
       aspect: [10, 16],
       quality: 1,
     });
-    console.log(res);
+
     if (!res.cancelled) {
       setImage(res.uri);
       setSlideUpPost(true);
@@ -186,6 +186,7 @@ const Profile = ({ navigation }) => {
   };
 
   const slideBottomSheet = () => {
+    dispatch(scrollDownHome(0, 0));
     setSlideUpMenu(true);
   };
 
@@ -204,9 +205,9 @@ const Profile = ({ navigation }) => {
   };
 
   const handleSubmit = () => {
-    // const headers = {
-    //   "Content-Type": "multipart/form-data",
-    // };
+    const headers = {
+      "Content-Type": "multipart/form-data",
+    };
     const formData = new FormData();
     formData.append("linkFile", {
       uri: "https://repository-images.githubusercontent.com/259118172/12df1a00-8825-11ea-865d-55461a9509da",
