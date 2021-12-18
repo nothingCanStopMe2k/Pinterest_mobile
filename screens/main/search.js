@@ -25,7 +25,6 @@ import { useSelector } from "react-redux";
 
 const Search = ({ navigation }) => {
   const user = useSelector((state) => state.userReducer.user);
-  // console.log(user);
   const [dataFile, setDataFile] = useState([]);
   const [recommendKeyword, setRecommendKeyword] = useState([]);
   const [allTags, setAllTags] = useState([]);
@@ -56,16 +55,13 @@ const Search = ({ navigation }) => {
     userService
       .getRecommend(recommendObject)
       .then((res) => {
-        // setDataRecommend(res);
         let promiseArr = [];
         for (let data of res) {
           promiseArr.push(fileService.getFileById(data.id));
         }
         return Promise.all(promiseArr);
-        // console.log("DATA RECOMMEND: ", res);
       })
       .then((data) => {
-        // console.log(data);
         if (data) setDataFile(data.flat());
       })
       .catch((err) => {

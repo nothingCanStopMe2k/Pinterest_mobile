@@ -18,14 +18,13 @@ import {
   showLoading,
   hideLoading,
 } from "../../redux";
-
 import { userService } from "../../services/user.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { user } from "./../../util/user";
 import { FONTS } from "../../constants";
 import { auth } from "../../services/firebase/configure";
 import AppButton from "../../components/AppButton";
-
+// import BottomSheet from "";
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
 const userReducer = (state) => state.userReducer;
@@ -162,7 +161,7 @@ const Profile = ({ navigation }) => {
             <Image
               source={{ uri: userProfile.profilePhoto }}
               style={styles.image}
-              resizeMode="center"
+              // resizeMode="center"
             />
           </View>
           <View style={styles.add}>
@@ -334,7 +333,7 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
     alignItems: "center",
-    justifyContent: "center",
+    // justifyContent: "center",
   },
   infoContainer: {
     alignSelf: "center",
