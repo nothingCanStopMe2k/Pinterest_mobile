@@ -21,7 +21,7 @@ import { hideLoading, scrollDownHome, showLoading } from "../../redux";
 import Marsonry from "../../components/Marsonry";
 
 import Pin from "../../components/Pin";
-import { COLORS, SIZES } from "../../constants";
+import { COLORS, SIZES, icons, FONTS } from "../../constants";
 import { adminService } from "../../services/admin.service";
 import { userService } from "../../services/user.service";
 import { getCurrentUser } from "../../redux/user/userAction";
@@ -233,6 +233,34 @@ const Home = ({ navigation }) => {
           <View style={styles.headerContentDiv}></View>
           <Text style={styles.headerContentFont}>Sự kiện</Text>
         </View>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("chat")}
+          style={{
+            position: "absolute",
+            height: "50%",
+            right: 15,
+            justifyContent: "center",
+          }}
+        >
+          <View
+            style={{
+              backgroundColor: COLORS.red,
+              borderRadius: 100,
+              position: "absolute",
+              zIndex: 100,
+              right: 0,
+              height: 15,
+              width: 15,
+            }}
+          ></View>
+          <Image
+            source={icons.notification}
+            style={{
+              width: 35,
+              height: 35,
+            }}
+          />
+        </TouchableOpacity>
         <ScrollView
           horizontal={true}
           showsHorizontalScrollIndicator={false}

@@ -43,6 +43,7 @@ export const FONTS = {
   h1: { fontFamily: "Roboto-Medium", fontSize: SIZES.h1 },
   h2: { fontFamily: "Roboto-Medium", fontSize: SIZES.h2 },
   h3: { fontFamily: "Roboto-Medium", fontSize: SIZES.h3 },
+  h3_thin: { fontFamily: "Roboto-Regular", fontSize: SIZES.h3 },
   h4: { fontFamily: "Roboto-Medium", fontSize: SIZES.h4, lineHeight: 20 },
   // body4: { fontFamily: "sans-serif", fontSize: SIZES.body4 },
   // body5: { fontFamily: "Quicksand-Bold", fontSize: SIZES.body5, lineHeight: 22 }

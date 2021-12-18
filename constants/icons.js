@@ -8,6 +8,7 @@ const close = require("../assets/icons/close.png");
 const heartFill = require("../assets/icons/heartFill.png");
 const heartNotFill = require("../assets/icons/heartNotFill.png");
 const dots = require("../assets/icons/dots.png");
+const notification = require("../assets/icons/notification.png");
 
 export default {
   google,
@@ -20,4 +21,5 @@ export default {
   heartFill,
   heartNotFill,
   dots,
+  notification,
 };
