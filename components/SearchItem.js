@@ -1,6 +1,9 @@
 import React from "react";
 import { StyleSheet, Text, View, Image } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import {
+  TouchableOpacity,
+  TouchableHighlight,
+} from "react-native-gesture-handler";
 
 export const Tag = ({ tagName, onPress }) => {
   return (
@@ -12,21 +15,40 @@ export const Tag = ({ tagName, onPress }) => {
   );
 };
 
-export const SearchItem = ({ keyword }) => (
-  <View style={styles.searchItem}>
-    <Image
-      style={styles.searchItem__Icon}
-      source={require("../assets/icons/search2.png")}
-    />
-    <Text style={styles.searchItem__keyword}>{keyword}</Text>
-    <TouchableOpacity>
-      <Image
-        style={styles.closeItem__Icon}
-        source={require("../assets/icons/close.png")}
-      />
-    </TouchableOpacity>
-  </View>
-);
+export const SearchItem = ({
+  index,
+  keyword,
+  onPress,
+  onDelete,
+  deleteAction,
+}) => {
+  const handlePress = () => {
+    onPress(keyword);
+  };
+
+  const handleDelete = () => {
+    onDelete(index);
+  };
+  return (
+    <TouchableHighlight underlayColor="#CCC" onPress={handlePress}>
+      <View style={styles.searchItem}>
+        <Image
+          style={styles.searchItem__Icon}
+          source={require("../assets/icons/search2.png")}
+        />
+        <Text style={styles.searchItem__keyword}>{keyword}</Text>
+        {deleteAction && (
+          <TouchableOpacity style={styles.DeleteButton} onPress={handleDelete}>
+            <Image
+              style={styles.closeItem__Icon}
+              source={require("../assets/icons/close.png")}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
+    </TouchableHighlight>
+  );
+};
 
 const styles = StyleSheet.create({
   tag__wrapper: {
@@ -53,6 +75,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
     flex: 1,
+  },
+  DeleteButton: {
+    marginRight: 5,
+    backgroundColor: "#CCC",
+    padding: 5,
+    borderRadius: 10,
   },
   closeItem__Icon: {
     width: 12,

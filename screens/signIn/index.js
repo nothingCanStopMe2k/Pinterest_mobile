@@ -240,7 +240,7 @@ const signIn = ({ navigation }) => {
           }}
         >
           <Text style={[styles.text, { color: "#fff" }]}>
-            Đăng kí với Email
+            Đăng nhập với Email
           </Text>
         </TouchableWithoutFeedback>
         <TouchableWithoutFeedback
