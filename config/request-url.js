@@ -11,6 +11,7 @@ const registerWithGoogle = "api/user/registerWithGoogle";
 const getRecommend = "/api/user/getRecommend";
 const updateFavouriteTag = "api/user/updateFavouriteTag";
 const interactImage = "api/user/interactImage";
+const getAllNotifyById = "api/user/getAllNotifyById";
 
 const getFileById = "api/file/getFileById";
 const deleteFileById = "api/file/deleteFileById";
@@ -44,4 +45,5 @@ export const requestUrl = {
   getAllTags,
   updateFavouriteTag,
   interactImage,
+  getAllNotifyById,
 };

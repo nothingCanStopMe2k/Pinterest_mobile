@@ -206,4 +206,14 @@ export default {
         return res.status(error.code).json(error);
       });
   },
+  getAllNotifyById: async (req, res, err) => {
+    const { userID } = req.query;
+    UserService.getAllNotifyById(userID)
+      .then((result) => {
+        return res.status(200).json(result);
+      })
+      .catch((err) => {
+        return res.status(err.code).json(err);
+      });
+  },
 };

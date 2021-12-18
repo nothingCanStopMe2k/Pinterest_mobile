@@ -361,4 +361,18 @@ export default {
         return Promise.reject(new ServiceError(500, error.message, error));
       });
   },
+  getAllNotifyById: async (userID) => {
+    return Announce.find({ userID })
+      .then((notify) => {
+        if (notify) {
+          return Promise.resolve(notify);
+        }
+        return Promise.reject(
+          new ServiceError(400, "Not found any notifications!")
+        );
+      })
+      .catch((err) => {
+        return Promise.reject(new ServiceError(500, err.message, err));
+      });
+  },
 };
