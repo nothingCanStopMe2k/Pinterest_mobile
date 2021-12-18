@@ -71,6 +71,7 @@ const signUp = ({ navigation }) => {
 
   const handleSignUp = () => {
     setVisiblePop(false);
+    navigation.navigate("register")
   };
 
   const onSubmit = async (data) => {
@@ -301,6 +302,20 @@ const signUp = ({ navigation }) => {
             }}
           >
             Quên mật khẩu?
+          </Text>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback onPress={() => { navigation.navigate("register") }}>
+          <Text
+            style={{
+              textAlign: "center",
+              width: "100%",
+              textDecorationLine: "underline",
+              marginVertical: 10,
+              ...FONTS.h4,
+            }}
+          >
+            Chưa có tài khoản? Đăng ký ngay!
           </Text>
         </TouchableWithoutFeedback>
       </Screen>

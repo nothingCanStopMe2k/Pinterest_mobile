@@ -59,6 +59,24 @@ const Detail = ({ route, navigation }) => {
       views: item.views + 1,
     };
 
+    if (!isLike && item.userID != userCurrent.user._id) {
+      let payLoadNofidy = {
+        ownerNameAction:
+          userCurrent.user.lastName + " " + userCurrent.user.firstName,
+        ownerIDAction: userCurrent.user._id,
+        linkAvatar: userCurrent.user.profilePhoto,
+        typeAction: "like",
+        userID: item.userID,
+      };
+
+      await userService
+        .interactImage(payLoadNofidy)
+        .then((res) => {
+          console.log("RES: OK NOTIFY SUCCESS");
+        })
+        .catch((err) => console.log("ERR NOTIFY: ", err));
+    }
+
     await fileService
       .updateFileById(post)
       .then((res) => {
@@ -282,6 +300,24 @@ const ModalComment = (props) => {
       dispatch(hideLoading());
       textInput.clear();
       props.setAllComment([...props.allComment, data]);
+
+      // thong bao den user duoc comment
+      let payLoadNofidy = {
+        ownerNameAction:
+          userCurrent.user.lastName + " " + userCurrent.user.firstName,
+        ownerIDAction: userCurrent.user._id,
+        linkAvatar: userCurrent.user.profilePhoto,
+        typeAction: "comment",
+        userID: item.userID,
+      };
+      if (payLoadNofidy.userID != payLoadNofidy.ownerIDAction) {
+        await userService
+          .interactImage(payLoadNofidy)
+          .then((res) => {
+            console.log("RES: OK NOTIFY SUCCESS");
+          })
+          .catch((err) => console.log("ERR NOTIFY: ", err));
+      }
     }
   };
 

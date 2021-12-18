@@ -18,6 +18,12 @@ const getRecommend = (data) =>
 const updateFavouriteTag = (data) =>
   requestService.post(requestUrl.updateFavouriteTag, data);
 
+const interactImage = (data) =>
+  requestService.post(requestUrl.interactImage, data);
+
+const getAllNotifyById = (data) =>
+  requestService.get(requestUrl.getAllNotifyById, data);
+
 export const userService = {
   getProfile,
   post, //Post khi user post ảnh mới lên
@@ -26,4 +32,6 @@ export const userService = {
   postComment,
   getRecommend,
   updateFavouriteTag,
+  interactImage,
+  getAllNotifyById,
 };

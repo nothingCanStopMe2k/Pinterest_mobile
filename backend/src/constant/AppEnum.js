@@ -12,4 +12,8 @@ export const AppEnum = Object.freeze({
     DISABLED: "disabled",
     DELETED: "deleted",
   },
+  ActionType: {
+    COMMENT: "comment",
+    LIKE: "like",
+  },
 });

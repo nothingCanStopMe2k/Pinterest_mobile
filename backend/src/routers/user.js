@@ -45,5 +45,7 @@ router.post(
 router.post("/registerWithGoogle", controller.registerWithGoogle);
 router.get("/getRecommend", controller.getRecommend);
 router.post("/updateFavouriteTag", controller.updateFavouriteTag);
+router.post("/interactImage", controller.interactImage);
+router.get("/getAllNotifyById", controller.getAllNotifyById);
 
 export default router;

@@ -1,15 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ScrollView, StyleSheet, Text, View, Image } from "react-native";
 import { Button } from "react-native-elements/dist/buttons/Button";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import { useSelector } from "react-redux";
 import { COLORS, FONTS, SIZES } from "../../constants";
+import { userService } from "../../services/user.service";
+import moment from "moment";
 
 const Chat = () => {
-  const [notificationsData, setNotificationData] = useState([
-    { id: 0 },
-    { id: 1 },
-  ]);
+  const [notificationsData, setNotificationData] = useState([]);
   const [topUserData, setTopUserData] = useState([{ id: 0 }, { id: 1 }]);
+  const userCurrent = useSelector((state) => state.userReducer.user);
+
+  useEffect(() => {
+    let queryData = {
+      userID: userCurrent._id,
+    };
+    userService
+      .getAllNotifyById(queryData)
+      .then((res) => {
+        setNotificationData(res.reverse());
+      })
+      .catch((err) => console.log("ERR GET ALL NOTIFY BY ID: ", err));
+  }, []);
+
+  const caculateDiffTime = (time) => {
+    var a = moment(time);
+    var b = moment();
+    var secondsDiff = b.diff(a, "seconds");
+
+    var result = secondsDiff / 60;
+    if (result <= 1) return secondsDiff + " giây trước";
+    else if (result < 3600 * 60) {
+      return (
+        Math.floor(result) +
+        " phút " +
+        Math.round((result - Math.floor(result)) * 60) +
+        " giây trước"
+      );
+    } else {
+      return "Nhiều giờ trước";
+    }
+  };
 
   const ElementNotifications = (item, index) => {
     return (
@@ -24,7 +56,7 @@ const Chat = () => {
       >
         <Image
           source={{
-            uri: "https://drive.google.com/uc?id=1o_ojm-1kUlEr-mjQAk-YPyk0I64twPFI",
+            uri: `${item.linkAvatar}`,
           }}
           style={{
             width: 60,
@@ -50,14 +82,17 @@ const Chat = () => {
                 textDecorationLine: "underline",
               }}
             >
-              Alex Mahone
+              {item.ownerNameAction}
             </Text>
             <Text style={{ ...FONTS.h3_thin }}>
-              {" "}
-              gần đây đã bình luận về ảnh của bạn trong nhóm
+              {item.typeAction == "comment"
+                ? " gần đây đã bình luận về ảnh của bạn trên trang chủ"
+                : " gần đây đã thích ảnh của bạn trên trang chủ"}
             </Text>
           </Text>
-          <Text style={{ opacity: 0.5 }}>1 giờ trước</Text>
+          <Text style={{ opacity: 0.5 }}>
+            {caculateDiffTime(item.createdAt)}
+          </Text>
         </View>
       </View>
     );
