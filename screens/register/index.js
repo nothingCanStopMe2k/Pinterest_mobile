@@ -24,7 +24,7 @@ import { onSignInWithGoogleAsync } from "../../services/firebase/signInWithGoogl
 import { hideLoading, showLoading, addCurrentUser } from "../../redux";
 import { user } from "../../util/user"; //
 
-const register = ({ navigation }) => {
+const Register = ({ navigation }) => {
   const [googleSubmitting, setGoogleSubmitting] = useState(false);
   const [email, setEmail] = useState("");
   const [isValidUser, setisValidUser] = useState("");
@@ -60,25 +60,27 @@ const register = ({ navigation }) => {
       setisValidUser("");
       setisValidPassword("");
       dispatch(showLoading());
-      await authService.register(data)
-      .then(async () => {
-        await authService
-        .login(data)
-        .then((res) => {
-          user.saveUserStorage(res.token);
-          dispatch(hideLoading());
-          dispatch(addCurrentUser(res.token.accessToken, res.token.user));
-          navigation.navigate("main")
+      await authService
+        .register(data)
+        .then(async () => {
+          await authService
+            .login(data)
+            .then((res) => {
+              user.saveUserStorage(res.token);
+              dispatch(hideLoading());
+              dispatch(addCurrentUser(res.token.accessToken, res.token.user));
+              navigation.navigate("main");
+            })
+            .catch((err) => {
+              dispatch(hideLoading());
+              setVisiblePop(true);
+            });
         })
         .catch((err) => {
           dispatch(hideLoading());
+          setApiErr(err.message);
           setVisiblePop(true);
         });
-      }).catch(err => {
-        dispatch(hideLoading());
-        setApiErr(err.message)
-        setVisiblePop(true);
-      });
     }
   };
   return (
@@ -144,7 +146,6 @@ const register = ({ navigation }) => {
       <View style={styles.view} />
 
       <Screen>
-        
         <Text style={{ ...styles.text, margin: 30 }}>Đăng ký ngay!</Text>
 
         <AppTextInput
@@ -209,13 +210,12 @@ const register = ({ navigation }) => {
             onPress={handleSubmit(onSubmit)}
           />
         </View>
-
       </Screen>
     </>
   );
 };
 
-export default register;
+export default Register;
 
 const styles = StyleSheet.create({
   view: {

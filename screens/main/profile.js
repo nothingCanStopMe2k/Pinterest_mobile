@@ -11,6 +11,7 @@ import {
   FlatList,
   Animated,
   Platform,
+  TextInput,
 } from "react-native";
 import { Ionicons, MaterialIcons } from "@expo/vector-icons";
 import {
@@ -28,6 +29,7 @@ import AppButton from "../../components/AppButton";
 import BottomSheet from "../../components/BottomSheet";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
+import axios from "axios";
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
 const userReducer = (state) => state.userReducer;
@@ -39,6 +41,10 @@ const Profile = ({ navigation }) => {
   const [userVideos, setUserVideos] = useState([]); // array video người đó đăng
   const [mounted, setMounted] = useState(false);
   const [image, setImage] = useState(null);
+  const [isSlideUpMenu, setSlideUpMenu] = useState(false);
+  const [isSlideUpPost, setSlideUpPost] = useState(false);
+  const [isCover, setCover] = useState(false);
+  const [status, setStatus] = useState("");
   const dispatch = useDispatch();
   const userCurrent = useSelector(userReducer);
   // console.log(userCurrent);
@@ -86,6 +92,7 @@ const Profile = ({ navigation }) => {
     userService
       .getProfile(payLoad)
       .then((res) => {
+        // console.log(res._id + "   " + res.firstName + " " + res.lastName);
         setUserProfile(res);
       })
       .catch((err) => {
@@ -118,7 +125,6 @@ const Profile = ({ navigation }) => {
 
   useEffect(() => {
     setMounted(true);
-
     // auth
     //   .signOut()
     //   .then(() => {
@@ -131,7 +137,10 @@ const Profile = ({ navigation }) => {
     //   console.log("User current: ", res["user"])
     // );
   }, []);
-
+  useEffect(() => {
+    if (!isSlideUpMenu && !isSlideUpPost) setCover(false);
+    else setCover(true);
+  }, [isSlideUpMenu, isSlideUpPost]);
   // Xin quyền truy cập storage của thiết bị
   useEffect(() => {
     const requestPermision = async () => {
@@ -154,7 +163,11 @@ const Profile = ({ navigation }) => {
       quality: 1,
     });
     console.log(res);
-    if (!res.cancelled) setImage(res.uri);
+    if (!res.cancelled) {
+      setImage(res.uri);
+      setSlideUpPost(true);
+      setSlideUpMenu(false);
+    }
   };
   //Chụp ảnh
   const captureImage = async () => {
@@ -164,9 +177,18 @@ const Profile = ({ navigation }) => {
       aspect: [10, 16],
       quality: 1,
     });
-    console.log(res);
-    if (!res.cancelled) setImage(res.uri);
+    // console.log(res);
+    if (!res.cancelled) {
+      setImage(res.uri);
+      setSlideUpPost(true);
+      setSlideUpMenu(false);
+    }
   };
+
+  const slideBottomSheet = () => {
+    setSlideUpMenu(true);
+  };
+
   const logout = () => {
     if (userCurrent.accessToken == "GOOGLE") {
       auth
@@ -181,6 +203,27 @@ const Profile = ({ navigation }) => {
     }
   };
 
+  const handleSubmit = () => {
+    // const headers = {
+    //   "Content-Type": "multipart/form-data",
+    // };
+    const formData = new FormData();
+    formData.append("linkFile", {
+      uri: "https://repository-images.githubusercontent.com/259118172/12df1a00-8825-11ea-865d-55461a9509da",
+      name: image.split("/").slice(-1),
+      // type: "image/jpeg",
+    });
+    formData.append("userID", userProfile._id);
+    formData.append(
+      "photoOfUser",
+      userProfile.firstName + " " + userProfile.lastName
+    );
+    formData.append("status", status);
+    userService
+      .post(formData, headers)
+      .then((res) => console.log(res))
+      .catch((err) => console.log(err));
+  };
   return (
     <SafeAreaView style={styles.container}>
       <Animated.ScrollView
@@ -190,6 +233,18 @@ const Profile = ({ navigation }) => {
         //   { useNativeDriver: true }
         // )}
       >
+        {isCover && (
+          <Animated.View
+            style={{
+              position: "absolute",
+              height: SIZES.height,
+              width: SIZES.width,
+              backgroundColor: "#000",
+              opacity: 0.4,
+              zIndex: 1,
+            }}
+          ></Animated.View>
+        )}
         <View style={styles.titleBar}>
           <Ionicons name="ios-arrow-back" size={24} color="#52575D"></Ionicons>
         </View>
@@ -202,14 +257,18 @@ const Profile = ({ navigation }) => {
               // resizeMode="center"
             />
           </View>
-          <View style={styles.add}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.add}
+            onPress={slideBottomSheet}
+          >
             <Ionicons
               name="ios-add"
               size={48}
               color="#DFD8C8"
               style={{ marginTop: 6, marginLeft: 2 }}
             ></Ionicons>
-          </View>
+          </TouchableOpacity>
         </View>
 
         <View style={styles.infoContainer}>
@@ -324,9 +383,13 @@ const Profile = ({ navigation }) => {
           </View>
         </View>
       </Animated.ScrollView>
-      <BottomSheet height={SIZES.height / 3}>
+      <BottomSheet
+        height={SIZES.height / 3}
+        isSlideUp={isSlideUpMenu}
+        setSlideDown={setSlideUpMenu}
+      >
         <View>
-          <Text style={styles.BottomSheet__header}>Đăng ảnh</Text>
+          <Text style={styles.BottomSheet__header}>Chọn ảnh</Text>
           <TouchableHighlight
             style={styles.UploadAction}
             onPress={() => captureImage()}
@@ -341,6 +404,29 @@ const Profile = ({ navigation }) => {
           >
             <Text style={styles.UploadAction__text}>Tải ảnh từ thiết bị</Text>
           </TouchableHighlight>
+        </View>
+      </BottomSheet>
+      <BottomSheet
+        height={SIZES.height / 1.1}
+        isSlideUp={isSlideUpPost}
+        setSlideDown={setSlideUpPost}
+      >
+        <View>
+          <Text style={styles.BottomSheet__header}>Đăng ảnh</Text>
+          <Image
+            source={{ uri: image }}
+            width={100}
+            height={100}
+            resizeMode="contain"
+          />
+          <TextInput
+            placeholder="Viết trạng thái..."
+            value={status}
+            onChangeText={(value) => setStatus(value)}
+          />
+          <TouchableOpacity style={styles.SubmitButton} onPress={handleSubmit}>
+            <Text>Đăng</Text>
+          </TouchableOpacity>
         </View>
       </BottomSheet>
     </SafeAreaView>
@@ -467,5 +553,9 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "white",
     fontWeight: "bold",
+  },
+  SubmitButton: {
+    padding: 10,
+    fontSize: 18,
   },
 });

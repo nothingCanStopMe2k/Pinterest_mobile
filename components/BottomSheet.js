@@ -1,15 +1,53 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect } from "react";
 import { View, StyleSheet, Animated, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SIZES } from "../constants/index";
-export default function BottomSheet({ children, height, getAnimation }) {
-  const bottom_sheet_translate_y = useRef(new Animated.Value(SIZES.height));
-  return (
-    <View style={[styles.BottomSheetContainer, { height: height }]}>
-      <View style={styles.gesture}></View>
+export default function BottomSheet({
+  children,
+  height,
+  isSlideUp,
+  setSlideDown,
+}) {
+  const bottom_sheet_translate_y = useRef(
+    new Animated.Value(SIZES.height)
+  ).current;
 
+  const slideUp = () => {
+    Animated.timing(bottom_sheet_translate_y, {
+      toValue: SIZES.height - height,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const slideDown = () => {
+    setSlideDown(false);
+    Animated.timing(bottom_sheet_translate_y, {
+      toValue: SIZES.height,
+      duration: 200,
+      useNativeDriver: true,
+    }).start();
+  };
+  useEffect(() => {
+    if (isSlideUp) slideUp();
+    else slideDown();
+  }, [isSlideUp]);
+  return (
+    <Animated.View
+      style={[
+        styles.BottomSheetContainer,
+        {
+          height: height,
+          transform: [{ translateY: bottom_sheet_translate_y }],
+        },
+      ]}
+    >
+      <View style={styles.gesture}></View>
+      <TouchableOpacity onPress={() => slideDown()}>
+        <Text>TẮT</Text>
+      </TouchableOpacity>
       {children}
-    </View>
+    </Animated.View>
   );
 }
 
@@ -19,7 +57,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     left: 0,
     right: 0,
-    bottom: 0,
+    // bottom: 0,
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
     padding: 10,

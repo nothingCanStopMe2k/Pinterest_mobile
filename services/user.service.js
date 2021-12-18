@@ -3,7 +3,8 @@ import { requestService } from "./request.service";
 
 const getProfile = (data) => requestService.get(requestUrl.getProfile, data);
 
-const post = (data) => requestService.post(requestUrl.post, data);
+const post = (data, headers) =>
+  requestService.post(requestUrl.post, data, headers);
 
 const getPhotos = (data) => requestService.get(requestUrl.getPhotos, data);
 
