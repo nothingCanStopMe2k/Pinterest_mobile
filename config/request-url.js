@@ -10,6 +10,7 @@ const postComment = "api/user/postComment";
 const registerWithGoogle = "api/user/registerWithGoogle";
 const getRecommend = "/api/user/getRecommend";
 const updateFavouriteTag = "api/user/updateFavouriteTag";
+const interactImage = "api/user/interactImage";
 
 const getFileById = "api/file/getFileById";
 const deleteFileById = "api/file/deleteFileById";
@@ -42,4 +43,5 @@ export const requestUrl = {
   getRecommend,
   getAllTags,
   updateFavouriteTag,
+  interactImage,
 };

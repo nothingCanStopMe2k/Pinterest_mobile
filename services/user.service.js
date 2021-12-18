@@ -18,6 +18,8 @@ const getRecommend = (data) =>
 const updateFavouriteTag = (data) =>
   requestService.post(requestUrl.updateFavouriteTag, data);
 
+const interactImage = (data) =>
+  requestService.post(requestUrl.interactImage, data);
 export const userService = {
   getProfile,
   post, //Post khi user post ảnh mới lên
@@ -26,4 +28,5 @@ export const userService = {
   postComment,
   getRecommend,
   updateFavouriteTag,
+  interactImage,
 };

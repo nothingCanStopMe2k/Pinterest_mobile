@@ -45,5 +45,6 @@ router.post(
 router.post("/registerWithGoogle", controller.registerWithGoogle);
 router.get("/getRecommend", controller.getRecommend);
 router.post("/updateFavouriteTag", controller.updateFavouriteTag);
+router.post("/interactImage", controller.interactImage);
 
 export default router;

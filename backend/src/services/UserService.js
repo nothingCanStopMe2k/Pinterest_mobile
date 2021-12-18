@@ -7,6 +7,7 @@ import { Token } from "../models/Token";
 import crypto from "crypto";
 import revmd5 from "reverse-md5";
 import nodemailer from "nodemailer";
+import Announce from "../models/Announce";
 
 export default {
   register: async (email, password, confirmPassword) => {
@@ -334,6 +335,30 @@ export default {
       })
       .catch((err) => {
         return Promise.reject(new ServiceError(500, err.message, err));
+      });
+  },
+  interactImage: async (
+    ownerNameAction,
+    ownerIDAction,
+    linkAvatar,
+    typeAction,
+    userID
+  ) => {
+    let announce = new Announce({
+      ownerNameAction,
+      ownerIDAction,
+      linkAvatar,
+      typeAction,
+      userID,
+    });
+
+    return announce
+      .save()
+      .then(async (result) => {
+        let announce = JSON.parse(JSON.stringify(result));
+      })
+      .catch((error) => {
+        return Promise.reject(new ServiceError(500, error.message, error));
       });
   },
 };
