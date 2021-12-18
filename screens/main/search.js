@@ -22,6 +22,7 @@ import { DefaultTheme } from "@react-navigation/native";
 import { SearchItem, Tag } from "../../components/SearchItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSelector } from "react-redux";
+import { resultFromApi, getNewPins } from "../../services/apiPixapay";
 
 const Search = ({ navigation }) => {
   const user = useSelector((state) => state.userReducer.user);
@@ -32,6 +33,7 @@ const Search = ({ navigation }) => {
   const [keyword, setKeyword] = useState({ key: "", isShow: false });
   const [isFocus, setFocus] = useState(false);
   const [isShowResult, setShowResult] = useState(false);
+  const [resultSearch, setResultSearch] = useState([]);
   const search_recommend_translate_y = useRef(
     new Animated.Value(SIZES.height)
   ).current;
@@ -134,6 +136,24 @@ const Search = ({ navigation }) => {
       setShowResult(true);
       setKeyword({ key: item, isShow: true });
       Keyboard.dismiss();
+
+      // search data from api pixapay
+      resultFromApi(item)
+        .then((res) => {
+          let data = res.length <= 15 ? res : res.slice(0, 16);
+          let results = data.map((img) => {
+            return {
+              link: img.urls,
+              downloads: img.downloads,
+              count: img.likes,
+              status: img.tags,
+              photoOfUser: img.user,
+            };
+          });
+
+          setResultSearch(results);
+        })
+        .catch((err) => console.log("ERR FROM API PIXAPAY: ", err));
     };
   };
 
@@ -238,9 +258,35 @@ const Search = ({ navigation }) => {
       >
         <View style={styles.seperator}></View>
         {isShowResult ? (
-          <View>
-            <Text>Ket qua tim kiem</Text>
-          </View>
+          // <View>
+          //   <Text>Ket qua tim kiem</Text>
+          // </View>
+          <Marsonry
+            style={{ alignSelf: "stretch" }}
+            contentContainerStyle={{
+              alignSelf: "stretch",
+            }}
+            // innerRef={scrollRef}
+            // onScroll={Animated.event(
+            //   [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+            //   { useNativeDriver: true }
+            // )}
+            // onMomentumScrollBegin={onMomentumScrollBegin}
+            // onMomentumScrollEnd={onMomentumScrollEnd}
+            // onScrollEndDrag={onScrollEndDrag}
+            numColumns={2}
+            data={resultSearch}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, i }) => (
+              <Pin
+                key={i.toString()}
+                index={i}
+                // scrollY={scrollY}
+                item={item}
+                navigation={navigation}
+              />
+            )}
+          />
         ) : keyword.key.trim() ? (
           <ScrollView>
             {recommendKeyword.length > 0 ? (
