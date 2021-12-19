@@ -139,8 +139,10 @@ const Profile = ({ navigation }) => {
     // );
   }, []);
   useEffect(() => {
-    if (!isSlideUpMenu && !isSlideUpPost) setCover(false);
-    else setCover(true);
+    if (!isSlideUpMenu && !isSlideUpPost) {
+      setCover(false);
+      setStatus("");
+    } else setCover(true);
   }, [isSlideUpMenu, isSlideUpPost]);
   // Xin quyền truy cập storage của thiết bị
   useEffect(() => {
@@ -419,21 +421,27 @@ const Profile = ({ navigation }) => {
         isSlideUp={isSlideUpPost}
         setSlideDown={setSlideUpPost}
       >
-        <View>
+        <View style={{ alignItems: "center" }}>
           <Text style={styles.BottomSheet__header}>Đăng ảnh</Text>
-          <Image
-            source={{ uri: image }}
-            width={100}
-            height={100}
-            resizeMode="contain"
-          />
-          <TextInput
-            placeholder="Viết trạng thái..."
-            value={status}
-            onChangeText={(value) => setStatus(value)}
-          />
+          <View style={{ flexDirection: "row" }}>
+            <Image
+              source={{ uri: image }}
+              width={150}
+              height={150}
+              resizeMode="contain"
+            />
+            <TextInput
+              placeholder="Viết trạng thái..."
+              value={status}
+              onChangeText={(value) => setStatus(value)}
+              multiline
+              style={styles.input}
+            />
+          </View>
           <TouchableOpacity style={styles.SubmitButton} onPress={handleSubmit}>
-            <Text>Đăng</Text>
+            <Text style={{ color: "#fff", textAlign: "center", fontSize: 18 }}>
+              Đăng
+            </Text>
           </TouchableOpacity>
         </View>
       </BottomSheet>
@@ -565,5 +573,14 @@ const styles = StyleSheet.create({
   SubmitButton: {
     padding: 10,
     fontSize: 18,
+    backgroundColor: "#293744",
+    borderRadius: 20,
+    marginTop: 40,
+    width: 100,
+  },
+  input: {
+    fontSize: 16,
+    width: 200,
+    alignSelf: "flex-start",
   },
 });

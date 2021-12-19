@@ -1,18 +1,19 @@
-import React, { useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { scrollDownHome } from "../redux";
-import { View, StyleSheet, Animated, Text } from "react-native";
+import { View, StyleSheet, Animated, Text, ScrollView } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SIZES } from "../constants/index";
+import { Entypo } from "@expo/vector-icons";
 export default function BottomSheet({
   children,
   height,
   isSlideUp,
   setSlideDown,
 }) {
-  const bottom_sheet_translate_y = useRef(
+  const [bottom_sheet_translate_y, setTranslateY] = useState(
     new Animated.Value(SIZES.height)
-  ).current;
+  );
   const dispatch = useDispatch();
 
   const slideUp = () => {
@@ -36,6 +37,10 @@ export default function BottomSheet({
     if (isSlideUp) slideUp();
     else slideDown();
   }, [isSlideUp]);
+  const onScroll = (evt) => {
+    console.log("I am moving");
+    slideDown();
+  };
   return (
     <Animated.View
       style={[
@@ -46,10 +51,18 @@ export default function BottomSheet({
         },
       ]}
     >
-      <View style={styles.gesture}></View>
-      <TouchableOpacity onPress={() => slideDown()}>
-        <Text>TẮT</Text>
-      </TouchableOpacity>
+      {/* <View
+        style={{ height: 40 }}
+        onStartShouldSetResponder={() => true}
+        onMoveShouldSetResponder={() => true}
+        onResponderMove={onScroll}
+      >
+        <View style={styles.gesture}></View>
+      </View> */}
+      <TouchableOpacity
+        style={styles.gesture}
+        onPress={() => slideDown()}
+      ></TouchableOpacity>
       {children}
     </Animated.View>
   );
@@ -65,14 +78,22 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 40,
     borderTopLeftRadius: 40,
     padding: 10,
+    paddingTop: 0,
     zIndex: 1000,
     alignItems: "center",
   },
   gesture: {
     height: 4,
-    width: 50,
+    width: 60,
     backgroundColor: "#CCC",
     borderRadius: 20,
-    marginBottom: 15,
+    marginVertical: 10,
+  },
+  header: {
+    flexDirection: "row",
+  },
+  closeButton: {
+    // position: "absolute",
+    // zIndex: 1002,
   },
 });
