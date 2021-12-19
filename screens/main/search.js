@@ -21,8 +21,9 @@ import { SIZES, COLORS } from "../../constants";
 import { DefaultTheme } from "@react-navigation/native";
 import { SearchItem, Tag } from "../../components/SearchItem";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { resultFromApi, getNewPins } from "../../services/apiPixapay";
+import { hideLoading, showLoading } from "../../redux";
 
 const Search = ({ navigation }) => {
   const user = useSelector((state) => state.userReducer.user);
@@ -33,7 +34,10 @@ const Search = ({ navigation }) => {
   const [keyword, setKeyword] = useState({ key: "", isShow: false });
   const [isFocus, setFocus] = useState(false);
   const [isShowResult, setShowResult] = useState(false);
+  const [refreshing, setRefresing] = useState(false);
+  const [refreshingSearch, setRefresingSearch] = useState(false);
   const [resultSearch, setResultSearch] = useState([]);
+  const dispatch = useDispatch();
   const search_recommend_translate_y = useRef(
     new Animated.Value(SIZES.height)
   ).current;
@@ -164,6 +168,30 @@ const Search = ({ navigation }) => {
       ...historySearch.slice(index + 1, historySearch.length),
     ]);
   };
+
+  // Handler refreshing
+  const resolveAfter2Seconds = (dataPa) => {
+    let data = dataPa.sort(() => {
+      return 0.5 - Math.random();
+    });
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(data);
+      }, 500);
+    });
+  };
+  const onRefresh = async () => {
+    dispatch(showLoading());
+    const result = await resolveAfter2Seconds(dataFile);
+    setDataFile([...result]);
+    dispatch(hideLoading());
+  };
+  const onRefreshSearch = async () => {
+    dispatch(showLoading());
+    const result = await resolveAfter2Seconds(resultSearch);
+    setResultSearch([...result]);
+    dispatch(hideLoading());
+  };
   //===================== Event Handler =====================//
   return (
     <View style={styles.container}>
@@ -235,6 +263,8 @@ const Search = ({ navigation }) => {
             // onMomentumScrollBegin={onMomentumScrollBegin}
             // onMomentumScrollEnd={onMomentumScrollEnd}
             // onScrollEndDrag={onScrollEndDrag}
+            refreshing={refreshing}
+            onRefresh={onRefresh}
             numColumns={2}
             data={dataFile}
             keyExtractor={(item, index) => index.toString()}
@@ -274,6 +304,8 @@ const Search = ({ navigation }) => {
             // onMomentumScrollBegin={onMomentumScrollBegin}
             // onMomentumScrollEnd={onMomentumScrollEnd}
             // onScrollEndDrag={onScrollEndDrag}
+            refreshing={refreshingSearch}
+            onRefresh={onRefreshSearch}
             numColumns={2}
             data={resultSearch}
             keyExtractor={(item, index) => index.toString()}
