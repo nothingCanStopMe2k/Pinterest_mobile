@@ -163,7 +163,7 @@ const Profile = ({ navigation }) => {
       aspect: [10, 16],
       quality: 1,
     });
-    console.log(res);
+
     if (!res.cancelled) {
       setImage(res.uri);
       setSlideUpPost(true);
@@ -187,6 +187,7 @@ const Profile = ({ navigation }) => {
   };
 
   const slideBottomSheet = () => {
+    dispatch(scrollDownHome(0, 0));
     setSlideUpMenu(true);
   };
 
@@ -209,8 +210,8 @@ const Profile = ({ navigation }) => {
       "Content-Type": "multipart/form-data",
       Accept: "application/json",
     };
-    const newImageUri = "file:/" + image.split("file:/").join("");
     console.log(newImageUri);
+    const newImageUri = "file:/" + image.split("file:/").join("");
     const formData = new FormData();
     formData.append("linkFile", {
       uri: image,

@@ -169,7 +169,13 @@ const Home = ({ navigation }) => {
     dispatch(showLoading());
     setRefresing(true);
     await fileService.getAllFile().then((res) => {
-      setDataFromDB(res.reverse().slice(0, 20));
+      let data = res
+        .reverse()
+        .slice(0, 20)
+        .sort(() => {
+          return 0.5 - Math.random();
+        });
+      setDataFromDB(data);
       dispatch(hideLoading());
     });
     setRefresing(false);

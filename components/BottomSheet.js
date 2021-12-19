@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { scrollDownHome } from "../redux";
 import { View, StyleSheet, Animated, Text } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { SIZES } from "../constants/index";
@@ -11,6 +13,7 @@ export default function BottomSheet({
   const bottom_sheet_translate_y = useRef(
     new Animated.Value(SIZES.height)
   ).current;
+  const dispatch = useDispatch();
 
   const slideUp = () => {
     Animated.timing(bottom_sheet_translate_y, {
@@ -21,6 +24,7 @@ export default function BottomSheet({
   };
 
   const slideDown = () => {
+    dispatch(scrollDownHome(0, 1));
     setSlideDown(false);
     Animated.timing(bottom_sheet_translate_y, {
       toValue: SIZES.height,
