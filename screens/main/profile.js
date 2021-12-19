@@ -29,6 +29,7 @@ import AppButton from "../../components/AppButton";
 import BottomSheet from "../../components/BottomSheet";
 import { TouchableHighlight } from "react-native-gesture-handler";
 import * as ImagePicker from "expo-image-picker";
+import mime from "mime";
 import axios from "axios";
 // Margin của thanh tabBottomNavigation, bao gồm: height+marginBottom
 const containerHeight = 90;
@@ -204,14 +205,17 @@ const Profile = ({ navigation }) => {
   };
 
   const handleSubmit = () => {
-    // const headers = {
-    //   "Content-Type": "multipart/form-data",
-    // };
+    const headers = {
+      "Content-Type": "multipart/form-data",
+      Accept: "application/json",
+    };
+    const newImageUri = "file:/" + image.split("file:/").join("");
+    console.log(newImageUri);
     const formData = new FormData();
     formData.append("linkFile", {
-      uri: "https://repository-images.githubusercontent.com/259118172/12df1a00-8825-11ea-865d-55461a9509da",
+      uri: image,
       name: image.split("/").slice(-1),
-      // type: "image/jpeg",
+      type: mime.getType(image),
     });
     formData.append("userID", userProfile._id);
     formData.append(
@@ -219,10 +223,13 @@ const Profile = ({ navigation }) => {
       userProfile.firstName + " " + userProfile.lastName
     );
     formData.append("status", status);
-    userService
-      .post(formData, headers)
-      .then((res) => console.log(res))
-      .catch((err) => console.log(err));
+    console.log(formData);
+    axios.post("http://192.168.1.3:3000/post", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Accept: "application/json",
+      },
+    });
   };
   return (
     <SafeAreaView style={styles.container}>
